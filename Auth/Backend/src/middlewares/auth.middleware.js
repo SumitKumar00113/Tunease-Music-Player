@@ -1,14 +1,14 @@
-const {body,validationResult}=require("express-validator");
+const { body, validationResult } = require("express-validator");
 
 
 
 
-const validate=(req,res,next)=>{
-    const errors=validationResult(req);
-    if(!errors.isEmpty()){
+const validate = (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
         return res.status(400).json({
-            success:false,
-    error:errors.array()
+            success: false,
+            error: errors.array()
         })
     }
     next()
@@ -48,7 +48,9 @@ const validateRegisterUser = [
         .withMessage("Password is required")
         .isLength({ min: 8 })
         .withMessage("Password must be at least 8 characters"),
-        validate
+    validate
 ];
+// ==================== LOGIN ==================== 
+const validateLoginUser = [body("email").trim().notEmpty().withMessage("Email is required").isEmail().withMessage("Enter a valid email"), body("password").notEmpty().withMessage("Password is required"), validate];
 
-module.exports={validateRegisterUser}
+module.exports = { validateRegisterUser, validateLoginUser }

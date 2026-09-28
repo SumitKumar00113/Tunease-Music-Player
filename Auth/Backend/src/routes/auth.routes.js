@@ -9,7 +9,9 @@ const tokenMiddleware=require("../middlewares/token.middleware");
 const router=express.Router();
 
 router.post("/register",authMiddleware.validateRegisterUser,authController.registerUser)
-
+router.post('/login',authMiddleware.validateLoginUser,authController.loginUser);
+router.post("/refresh",tokenMiddleware.refreshTokenValidate,authController.refreshAccessToken)
+router.post("/delete",tokenMiddleware.accessTokenValidate,authController.logoutUser)
 
 
 module.exports=router
