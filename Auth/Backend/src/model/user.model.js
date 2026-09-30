@@ -9,7 +9,9 @@
         },
         mobileNo:{
             type:Number,
-            required:true
+            required:function(){
+                return !this.googleId;
+            }
         },
         fullName:{
             firstName:{
@@ -29,10 +31,18 @@
             return !this.googleId
         }
         },
+        profilePhoto:{
+            type:String,
+        },
         role:{
             type:String,
             enum:["user","seller","admin"],
             default:"user"
+        },
+        authProvider:{
+            type:String,
+            enum:['google',"local"],
+            default:"local"
         }
     })
 

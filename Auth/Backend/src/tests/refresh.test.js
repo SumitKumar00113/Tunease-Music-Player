@@ -105,7 +105,7 @@ describe("POST /api/auth/refresh", () => {
             .set("Cookie", `refreshToken=${refreshToken}`);
 
         expect(response.status).toBe(404);
-        expect(response.body.message).toBe("user not found");
+        expect(response.body.message).toBe("User not found");
     });
 
     it("returns an internal server error when looking up the user fails", async () => {
@@ -119,7 +119,7 @@ describe("POST /api/auth/refresh", () => {
 
         expect(response.status).toBe(500);
         expect(response.body).toMatchObject({
-            message: "internal server error",
+            message: "Internal server error",
             error: "database unavailable",
         });
     });
