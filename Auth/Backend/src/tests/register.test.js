@@ -58,7 +58,7 @@ describe("POST /api/auth/register", () => {
         expect(response.status).toBe(201);
 
         expect(response.body).toMatchObject({
-            message: "user registered successfully",
+            message: "User registered successfully",
 
             user: {
                 _id: "registered-user-id",
@@ -215,7 +215,7 @@ describe("POST /api/auth/register", () => {
                 .send(validUser);
 
             expect(response.status).toBe(409);
-            expect(response.body.message).toBe("user already exist");
+            expect(response.body.message).toBe("User already exists");
             expect(response.body).not.toHaveProperty("isUserExist");
             expect(response.headers["set-cookie"]).toBeUndefined();
             expect(userModel.create).not.toHaveBeenCalled();
@@ -233,7 +233,7 @@ describe("POST /api/auth/register", () => {
 
         expect(response.status).toBe(500);
         expect(response.body).toMatchObject({
-            message: "internal server during register user",
+            message: "Internal server error during user registration",
             error: "database unavailable",
         });
         expect(userModel.create).not.toHaveBeenCalled();
@@ -250,7 +250,7 @@ describe("POST /api/auth/register", () => {
 
         expect(response.status).toBe(500);
         expect(response.body).toMatchObject({
-            message: "internal server during register user",
+            message: "Internal server error during user registration",
             error: "database unavailable",
         });
         expect(userModel.create).toHaveBeenCalledTimes(1);

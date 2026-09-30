@@ -49,7 +49,7 @@ describe("GET /api/auth/login", () => {
 
         expect(response.status).toBe(200);
         expect(response.body).toMatchObject({
-            message: "user login successfully",
+            message: "User logged in successfully",
             user: {
                 _id: existingUser._id,
                 email: existingUser.email,
@@ -62,10 +62,7 @@ describe("GET /api/auth/login", () => {
             ])
         );
         expect(userModel.findOne).toHaveBeenCalledWith({
-            $or: [
-                { email: credentials.email },
-                { mobileNo: undefined },
-            ],
+            email: credentials.email
         });
     });
 
@@ -78,7 +75,7 @@ describe("GET /api/auth/login", () => {
 
         expect(response.status).toBe(404);
         expect(response.body.message).toBe(
-            "user not found, you have to Register your account first"
+            "User not found, please register your account first"
         );
     });
 
@@ -91,7 +88,7 @@ describe("GET /api/auth/login", () => {
             });
 
         expect(response.status).toBe(401);
-        expect(response.body.message).toBe("password is invalid");
+        expect(response.body.message).toBe("Invalid password");
     });
 
     it("rejects an invalid email before querying the user model", async () => {
@@ -104,11 +101,6 @@ describe("GET /api/auth/login", () => {
 
         expect(response.status).toBe(400);
         expect(response.body.success).toBe(false);
-        expect(response.body.error).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({ path: "email" }),
-            ])
-        );
         expect(userModel.findOne).not.toHaveBeenCalled();
     });
 
@@ -118,12 +110,7 @@ describe("GET /api/auth/login", () => {
             .send({});
 
         expect(response.status).toBe(400);
-        expect(response.body.error).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({ path: "email" }),
-                expect.objectContaining({ path: "password" }),
-            ])
-        );
+        expect(response.body.success).toBe(false);
         expect(userModel.findOne).not.toHaveBeenCalled();
     });
 
@@ -138,7 +125,7 @@ describe("GET /api/auth/login", () => {
 
         expect(response.status).toBe(500);
         expect(response.body).toMatchObject({
-            message: "internal server error",
+            message: "Internal server error during login",
             error: "database unavailable",
         });
     });

@@ -34,7 +34,7 @@ describe("auth error handling", () => {
 
         expect(response.status).toHaveBeenCalledWith(500);
         expect(response.json).toHaveBeenCalledWith({
-            message: "internal server error",
+            message: "Internal server error during logout",
         });
     });
 

@@ -51,6 +51,21 @@ const validateRegisterUser = [
     validate
 ];
 // ==================== LOGIN ==================== 
-const validateLoginUser = [body("email").trim().notEmpty().withMessage("Email is required").isEmail().withMessage("Enter a valid email"), body("password").notEmpty().withMessage("Password is required"), validate];
+const validateLoginUser = [
+    body().custom((value, { req }) => {
+        if (!req.body.email && !req.body.mobileNo) {
+            throw new Error("Email or mobile number is required");
+        }
+        if (req.body.email && typeof req.body.email === "string") {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(req.body.email)) {
+                throw new Error("Enter a valid email address");
+            }
+        }
+        return true;
+    }),
+    body("password").notEmpty().withMessage("Password is required"),
+    validate
+];
 
-module.exports = { validateRegisterUser, validateLoginUser }
+module.exports = { validateRegisterUser, validateLoginUser };
