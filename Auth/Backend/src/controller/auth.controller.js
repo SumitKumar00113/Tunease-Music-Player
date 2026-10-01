@@ -46,7 +46,7 @@ const registerUser = async (req, res) => {
             },
             password: hashPass
         });
-        publishToQueue("user-created",{
+        await publishToQueue("user_created",{
             id:user._id,
             email:user.email,
             mobileNo:user.mobileNo,
@@ -95,7 +95,6 @@ const loginUser = async (req, res) => {
         const safeUser = {
             _id: isUserExist._id,
             email: isUserExist.email,
-            mobileNo: isUserExist.mobileNo,
             fullName: isUserExist.fullName,
             role: isUserExist.role,
             profilePhoto: isUserExist.profilePhoto
@@ -177,15 +176,14 @@ const googleAuthCallBack = async (req, res) => {
             profilePhoto: user.photos[0]?.value,
             authProvider: user.provider || "google"
         });
-     publishToQueue("user_created",{
+    await publishToQueue("user_created",{
             id:newUser._id,
             email:newUser.email,
-             mobileNo: newUser.mobileNo,
             fullName: newUser.fullName,
             role: newUser.role,
         })
         setAuthCookies(res, newUser);
-        return res.redirect(_config.CLIENT_URL);
+        return res.redirect(_config.CLIENT_URL)
     } catch (err) {
         return res.status(500).json({
             message: "Error during Google OAuth authentication",

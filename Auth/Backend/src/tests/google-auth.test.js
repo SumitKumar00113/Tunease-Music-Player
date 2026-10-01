@@ -8,8 +8,12 @@ jest.doMock("../model/user.model.js", () => ({
     findOne: jest.fn(),
     create: jest.fn(),
 }));
+jest.doMock("../messageBroker/rabbit.js", () => ({
+    publishToQueue: jest.fn().mockResolvedValue(true),
+}));
 
 const userModel = require("../model/user.model");
+const { publishToQueue } = require("../messageBroker/rabbit");
 const authController = require("../controller/auth.controller");
 
 const googleProfile = {
@@ -39,6 +43,7 @@ const createResponse = () => {
 beforeEach(() => {
     userModel.findOne.mockReset();
     userModel.create.mockReset();
+    publishToQueue.mockReset().mockResolvedValue(true);
 });
 
 describe("Google authentication callback", () => {
@@ -119,5 +124,9 @@ describe("Google authentication callback", () => {
         });
         expect(response.redirect).toHaveBeenCalledWith(expect.any(String));
         expect(response.cookie).toHaveBeenCalledTimes(2);
+        expect(publishToQueue).toHaveBeenCalledWith(
+            "user_created",
+            expect.objectContaining({ email: newUser.email })
+        );
     });
 });

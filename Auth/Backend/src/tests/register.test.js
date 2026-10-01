@@ -16,8 +16,12 @@ jest.doMock("../model/user.model.js", () => ({
     findOne: jest.fn(),
     create: jest.fn(),
 }));
+jest.doMock("../messageBroker/rabbit.js", () => ({
+    publishToQueue: jest.fn().mockResolvedValue(true),
+}));
 
 const userModel = require("../model/user.model");
+const { publishToQueue } = require("../messageBroker/rabbit");
 const app = require("../app");
 
 const validUser = {
@@ -33,6 +37,7 @@ const validUser = {
 beforeEach(() => {
     userModel.findOne.mockReset();
     userModel.create.mockReset();
+    publishToQueue.mockReset().mockResolvedValue(true);
 
     userModel.findOne.mockResolvedValue(null);
 });
@@ -56,6 +61,10 @@ describe("POST /api/auth/register", () => {
             .send(validUser);
 
         expect(response.status).toBe(201);
+        expect(publishToQueue).toHaveBeenCalledWith(
+            "user_created",
+            expect.objectContaining({ email: validUser.email })
+        );
 
         expect(response.body).toMatchObject({
             message: "User registered successfully",
