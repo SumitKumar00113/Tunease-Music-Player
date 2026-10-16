@@ -14,11 +14,11 @@ const s3=new S3Client({
 
 
 const uploadFile=async(file)=>{
-    const key=`${uuid()}-${file.originalName}`
+    const key=`${uuid()}-${file.originalname}`
 const command=new PutObjectCommand({
 Bucket:"amzn-s3-tunease-bucket",
 Body:file.buffer,
-key:key 
+Key:key
 })
 const response=await s3.send(command);
 return key;
@@ -26,7 +26,7 @@ return key;
 
 const getPreSignerUrl=async(key)=>{
 const command=new GetObjectCommand({
-    key:key,
+    Key:key,
     Bucket:"amzn-s3-tunease-bucket"
 })
 const url=await getSignedUrl(s3,command,{expiresIn:3600})

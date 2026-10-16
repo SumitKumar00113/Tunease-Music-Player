@@ -1,36 +1,43 @@
 const userModel = require("../model/user.model");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 const _config = require("../config/config");
+const cacheService = require("../redis/cache.service");
 const {
     generateAccessToken,
     generateRefreshToken,
 } = require("../utils/token");
-const {publishToQueue}=require("../messageBroker/rabbit");
+const { publishToQueue } = require("../messageBroker/rabbit");
 
 
 
-const setAuthCookies = (res, user) => {
+const setAuthCookies = (res, accessToken, refreshToken) => {
     const isProduction = _config.NODE_ENV === "production";
-    res.cookie("accessToken", generateAccessToken(user), {
+
+    res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: isProduction,
         sameSite: isProduction ? "strict" : "lax",
-        maxAge: 2 * 24 * 60 * 60 * 1000,
+        maxAge: 15 * 60 * 1000 // 15 minutes
     });
-    res.cookie("refreshToken", generateRefreshToken(user), {
+
+    res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: isProduction,
         sameSite: isProduction ? "strict" : "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 };
 
 const registerUser = async (req, res) => {
     try {
-        const { email, mobileNo, fullName, password } = req.body;
+        const { email, mobileNo, fullName, password, role = "user" } = req.body;
         const isUserExist = await userModel.findOne({
             $or: [{ email }, { mobileNo }]
         });
+        const sessionId = crypto.randomUUID();
+
         if (isUserExist) {
             return res.status(409).json({
                 message: 'User already exists',
@@ -44,16 +51,38 @@ const registerUser = async (req, res) => {
                 firstName: fullName.firstName,
                 lastName: fullName.lastName
             },
-            password: hashPass
+            password: hashPass,
+            role: role || "user",
         });
-        await publishToQueue("user_created",{
-            id:user._id,
-            email:user.email,
-            mobileNo:user.mobileNo,
-            fullName:user.fullName,
-            role:user.role
-        })
-        setAuthCookies(res, user);
+
+        await publishToQueue("user_created", {
+            id: user._id,
+            email: user.email,
+            mobileNo: user.mobileNo,
+            fullName: user.fullName,
+            role: user.role
+        });
+
+        const accessToken = generateAccessToken(user, sessionId);
+        const refreshToken = generateRefreshToken(user, sessionId);
+
+        // Store session in Redis with 7-day TTL
+        const refreshTokenHash = await bcrypt.hash(refreshToken, 12);
+        const sessionData = {
+            userId: user._id.toString(),
+            refreshTokenHash,
+            createdAt: new Date().toISOString(),
+            userAgent: req.get("User-Agent") || "Unknown",
+            ip: req.ip,
+        };
+        await cacheService.set(
+            `session:${sessionId}`,
+            sessionData,
+            cacheService.EXPIRATION.USER_SESSION
+        );
+
+        setAuthCookies(res, accessToken, refreshToken);
+
         const safeUser = {
             _id: user._id,
             email: user.email,
@@ -62,6 +91,14 @@ const registerUser = async (req, res) => {
             role: user.role,
             profilePhoto: user.profilePhoto
         };
+
+        // Cache user profile in Redis with 1 hour TTL
+        await cacheService.set(
+            `user:profile:${user._id}`,
+            safeUser,
+            cacheService.EXPIRATION.USER_PROFILE
+        );
+
         return res.status(201).json({
             message: 'User registered successfully',
             user: safeUser
@@ -80,6 +117,8 @@ const loginUser = async (req, res) => {
         const { email, mobileNo, password } = req.body;
         const query = email ? { email } : { mobileNo };
         const isUserExist = await userModel.findOne(query);
+        const sessionId = crypto.randomUUID();
+
         if (!isUserExist) {
             return res.status(404).json({
                 message: "User not found, please register your account first"
@@ -91,7 +130,28 @@ const loginUser = async (req, res) => {
                 message: "Invalid password"
             });
         }
-        setAuthCookies(res, isUserExist);
+
+        const accessToken = generateAccessToken(isUserExist, sessionId);
+        const refreshToken = generateRefreshToken(isUserExist, sessionId);
+
+        const refreshTokenHash = await bcrypt.hash(refreshToken, 12);
+        const sessionData = {
+            userId: isUserExist._id.toString(),
+            refreshTokenHash,
+            createdAt: new Date().toISOString(),
+            userAgent: req.get("User-Agent") || "Unknown",
+            ip: req.ip,
+        };
+
+        // Store user session in Redis with 7 days TTL (604800s)
+        await cacheService.set(
+            `session:${sessionId}`,
+            sessionData,
+            cacheService.EXPIRATION.USER_SESSION
+        );
+
+        setAuthCookies(res, accessToken, refreshToken);
+
         const safeUser = {
             _id: isUserExist._id,
             email: isUserExist.email,
@@ -99,6 +159,14 @@ const loginUser = async (req, res) => {
             role: isUserExist.role,
             profilePhoto: isUserExist.profilePhoto
         };
+
+        // Cache user profile in Redis with 1 hour TTL (3600s)
+        await cacheService.set(
+            `user:profile:${isUserExist._id}`,
+            safeUser,
+            cacheService.EXPIRATION.USER_PROFILE
+        );
+
         return res.status(200).json({
             message: "User logged in successfully",
             user: safeUser
@@ -113,24 +181,83 @@ const loginUser = async (req, res) => {
 
 const refreshAccessToken = async (req, res) => {
     try {
-        const user = await userModel.findById(req.user.id);
+        const refreshToken = req.cookies?.refreshToken;
+        if (!refreshToken) {
+            return res.status(401).json({
+                message: "Refresh token not found. Please login first."
+            });
+        }
+
+        let decoded;
+        try {
+            decoded = jwt.verify(
+                refreshToken,
+                _config.JWT_REFRESH_TOKEN_SECRET_KEY
+            );
+        } catch (err) {
+            return res.status(401).json({
+                message: "Unauthorized, invalid refresh token"
+            });
+        }
+
+        // Validate session in Redis when sessionId is present
+        if (decoded.sessionId) {
+            const sessionKey = `session:${decoded.sessionId}`;
+            const storedSession = await cacheService.get(sessionKey);
+
+            if (!storedSession) {
+                return res.status(401).json({
+                    message: "Session expired or revoked. Please log in again."
+                });
+            }
+
+            const sessionUserId = storedSession.userId || storedSession.userid;
+            if (sessionUserId && sessionUserId.toString() !== decoded.id.toString()) {
+                return res.status(401).json({
+                    message: "Invalid session"
+                });
+            }
+
+            if (storedSession.refreshTokenHash) {
+                const isValidRefreshToken = await bcrypt.compare(
+                    refreshToken,
+                    storedSession.refreshTokenHash
+                );
+                if (!isValidRefreshToken) {
+                    return res.status(401).json({
+                        message: "Refresh token has been revoked or is invalid"
+                    });
+                }
+            }
+        }
+
+        const user = await userModel.findById(decoded.id);
+
         if (!user) {
+            if (decoded.sessionId) {
+                await cacheService.del(`session:${decoded.sessionId}`);
+            }
             return res.status(404).json({
                 message: "User not found"
             });
         }
 
+        const newAccessToken = generateAccessToken(
+            user,
+            decoded.sessionId || crypto.randomUUID()
+        );
         const isProduction = _config.NODE_ENV === "production";
-        res.cookie("accessToken", generateAccessToken(user), {
+        res.cookie("accessToken", newAccessToken, {
             httpOnly: true,
             secure: isProduction,
             sameSite: isProduction ? "strict" : "lax",
-            maxAge: 2 * 24 * 60 * 60 * 1000
+            maxAge: 15 * 60 * 1000 // 15 mins
         });
 
         return res.status(200).json({
             message: "Access token refreshed successfully"
         });
+
     } catch (err) {
         return res.status(500).json({
             message: "Internal server error",
@@ -141,6 +268,37 @@ const refreshAccessToken = async (req, res) => {
 
 const logoutUser = async (req, res) => {
     try {
+        const accessToken = req.cookies?.accessToken || req.headers.authorization?.split(" ")[1];
+        const refreshToken = req.cookies?.refreshToken;
+
+        // Invalidate session in Redis
+        if (req.user?.sessionId) {
+            await cacheService.del(`session:${req.user.sessionId}`);
+        } else if (refreshToken) {
+            try {
+                const decodedRefresh = jwt.decode(refreshToken);
+                if (decodedRefresh?.sessionId) {
+                    await cacheService.del(`session:${decodedRefresh.sessionId}`);
+                }
+            } catch (e) {
+                // Ignore parse errors
+            }
+        }
+
+        // Add access token to blacklist cache with 15 mins TTL
+        if (accessToken) {
+            await cacheService.set(
+                `bl:${accessToken}`,
+                "revoked",
+                cacheService.EXPIRATION.BLACKLIST_TOKEN
+            );
+        }
+
+        // Clear user profile cache
+        if (req.user?.id) {
+            await cacheService.del(`user:profile:${req.user.id}`);
+        }
+
         res.clearCookie("accessToken");
         res.clearCookie("refreshToken");
 
@@ -157,12 +315,28 @@ const logoutUser = async (req, res) => {
 const googleAuthCallBack = async (req, res) => {
     try {
         const user = req.user;
+        const sessionId = crypto.randomUUID();
         let existingUser = await userModel.findOne({
             $or: [{ email: user.emails[0].value }, { googleId: user.id }]
         });
 
         if (existingUser) {
-            setAuthCookies(res, existingUser);
+            const accessToken = generateAccessToken(existingUser, sessionId);
+            const refreshToken = generateRefreshToken(existingUser, sessionId);
+
+            const refreshTokenHash = await bcrypt.hash(refreshToken, 12);
+            await cacheService.set(
+                `session:${sessionId}`,
+                {
+                    userId: existingUser._id.toString(),
+                    refreshTokenHash,
+                    createdAt: new Date().toISOString(),
+                    provider: "google"
+                },
+                cacheService.EXPIRATION.USER_SESSION
+            );
+
+            setAuthCookies(res, accessToken, refreshToken);
             return res.redirect(_config.CLIENT_URL);
         }
 
@@ -176,14 +350,31 @@ const googleAuthCallBack = async (req, res) => {
             profilePhoto: user.photos[0]?.value,
             authProvider: user.provider || "google"
         });
-    await publishToQueue("user_created",{
-            id:newUser._id,
-            email:newUser.email,
+
+        await publishToQueue("user_created", {
+            id: newUser._id,
+            email: newUser.email,
             fullName: newUser.fullName,
             role: newUser.role,
-        })
-        setAuthCookies(res, newUser);
-        return res.redirect(_config.CLIENT_URL)
+        });
+
+        const accessToken = generateAccessToken(newUser, sessionId);
+        const refreshToken = generateRefreshToken(newUser, sessionId);
+
+        const refreshTokenHash = await bcrypt.hash(refreshToken, 12);
+        await cacheService.set(
+            `session:${sessionId}`,
+            {
+                userId: newUser._id.toString(),
+                refreshTokenHash,
+                createdAt: new Date().toISOString(),
+                provider: "google"
+            },
+            cacheService.EXPIRATION.USER_SESSION
+        );
+
+        setAuthCookies(res, accessToken, refreshToken);
+        return res.redirect(_config.CLIENT_URL);
     } catch (err) {
         return res.status(500).json({
             message: "Error during Google OAuth authentication",
@@ -194,12 +385,29 @@ const googleAuthCallBack = async (req, res) => {
 
 const getUserProfile = async (req, res) => {
     try {
-        const user = await userModel.findById(req.user.id).select("-password");
+        const userId = req.user.id || req.user._id;
+        const cacheKey = `user:profile:${userId}`;
+
+        // 1. Try cache hit from Redis
+        const cachedUser = await cacheService.get(cacheKey);
+        if (cachedUser) {
+            return res.status(200).json({
+                user: cachedUser,
+                source: "cache"
+            });
+        }
+
+        // 2. Cache miss -> query MongoDB
+        const user = await userModel.findById(userId).select("-password").lean();
         if (!user) {
             return res.status(404).json({
                 message: "User profile not found"
             });
         }
+
+        // 3. Cache user profile in Redis with 1 hour TTL (3600s)
+        await cacheService.set(cacheKey, user, cacheService.EXPIRATION.USER_PROFILE);
+
         return res.status(200).json({
             user
         });
@@ -211,11 +419,83 @@ const getUserProfile = async (req, res) => {
     }
 };
 
+const updateUserProfile = async (req, res) => {
+    try {
+        const userId = req.user.id || req.user._id;
+        const { firstName, lastName, mobileNo, profilePhoto, role } = req.body;
+
+        const existingUser = await userModel.findById(userId);
+        if (!existingUser) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        const updateData = {};
+
+        if (firstName !== undefined || lastName !== undefined) {
+            updateData.fullName = {
+                firstName: firstName !== undefined ? firstName.trim() : (existingUser.fullName?.firstName || ""),
+                lastName: lastName !== undefined ? lastName.trim() : (existingUser.fullName?.lastName || "")
+            };
+        }
+
+        if (mobileNo !== undefined) {
+            const parsedMobile = Number(mobileNo);
+            if (mobileNo === null || mobileNo === "") {
+                updateData.mobileNo = null;
+            } else if (!isNaN(parsedMobile)) {
+                updateData.mobileNo = parsedMobile;
+            }
+        }
+
+        if (profilePhoto !== undefined) {
+            updateData.profilePhoto = profilePhoto.trim();
+        }
+
+        if (role !== undefined && ["user", "artist"].includes(role)) {
+            updateData.role = role;
+        }
+
+        const updatedUser = await userModel.findByIdAndUpdate(
+            userId,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        ).select("-password").lean();
+
+        // Invalidate and update Redis cache for profile with 1 hour TTL
+        const cacheKey = `user:profile:${userId}`;
+        await cacheService.del(cacheKey);
+        if (updatedUser) {
+            await cacheService.set(cacheKey, updatedUser, cacheService.EXPIRATION.USER_PROFILE);
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
+            user: updatedUser
+        });
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Error updating user profile",
+            error: err.message
+        });
+    }
+};
+
+
+
+
+
+
 module.exports = {
     registerUser,
     loginUser,
     refreshAccessToken,
     logoutUser,
     googleAuthCallBack,
-    getUserProfile
+    getUserProfile,
+    updateUserProfile
 };

@@ -1,5 +1,6 @@
-const jwt=require('jsonwebtoken')
-const _config=require("../config/config");
+const jwt = require('jsonwebtoken');
+const _config = require("../config/config");
+const cacheService = require("../redis/cache.service");
 const accessTokenValidate = async (req, res, next) => {
     try {
         const accessToken =
@@ -18,6 +19,15 @@ const accessTokenValidate = async (req, res, next) => {
                 accessToken,
                 _config.JWT_ACCESS_TOKEN_SECRET_KEY
             );
+
+            // Check if token has been revoked / blacklisted in Redis
+            const isBlacklisted = await cacheService.get(`bl:${accessToken}`);
+            if (isBlacklisted) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Access token has been revoked"
+                });
+            }
 
             req.user = decoded;
             return next();

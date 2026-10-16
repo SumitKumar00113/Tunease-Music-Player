@@ -36,13 +36,21 @@
         },
         role:{
             type:String,
-            enum:["user","seller","admin"],
+            enum:["user","artist","admin"],
             default:"user"
         },
         authProvider:{
             type:String,
             enum:['google',"local"],
             default:"local"
+        },
+        isEmailVerified:{
+            type:Boolean,
+            default:false,
+        },
+        isMobileNoVerified:{
+            type:Boolean,
+            default:false,
         }
     })
 

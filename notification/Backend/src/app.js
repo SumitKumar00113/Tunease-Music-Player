@@ -1,10 +1,10 @@
-const express=require("express");
+const express = require("express");
 
+const app = express();
+app.use(express.json());
 
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok" });
+});
 
-
-const app=express();
-
-
-
-module.exports=app;
+module.exports = app;
