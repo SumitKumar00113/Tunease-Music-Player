@@ -9,7 +9,7 @@
 import axios from 'axios';
 
 export const API_BASE_URL = import.meta.env.VITE_MUSIC_API_URL || 'http://localhost:3002'; // Music Backend Port
-export const AUTH_BASE_URL = import.meta.env.VITE_AUTH_API_URL || 'http://localhost:3000/api/auth';
+export const AUTH_BASE_URL = import.meta.env.VITE_AUTH_API_URL || 'https://tunease-auth-service-latest.onrender.com/api/auth';
 export const USE_BACKEND_API = true; // Enabled live backend integration
 
 export function getAuthHeaders() {
@@ -24,7 +24,8 @@ export function mapBackendMusicToTrack(item) {
     title: item.title || 'Untitled Track',
     artistName: item.artistName || 'Tunease Artist',
     artistId: item.artistId || '',
-    album: item.album || 'Single',
+    album: item.albumName || (typeof item.album === 'string' ? item.album : 'Single'),
+    featuredArtists: item.featuredArtists || '',
     genre: item.genre || 'Electronic',
     description: item.description || '',
     coverUrl: item.coverImageUrl || item.coverUrl || 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=400&auto=format&fit=crop&q=80',

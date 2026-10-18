@@ -1,0 +1,30 @@
+{
+  "name": "tunease-workspace",
+  "version": "1.0.0",
+  "description": "Tunease - Lossless Next.js Music Streaming Platform with TypeScript Microservices",
+  "private": true,
+  "scripts": {
+    "dev:web": "npm --prefix web run dev",
+    "dev:auth": "npm --prefix Auth/Backend run dev",
+    "dev:music": "npm --prefix music/Backend run dev",
+    "dev:notification": "npm --prefix notification/Backend run dev",
+    "build:web": "npm --prefix web run build",
+    "build:auth": "npm --prefix Auth/Backend run build",
+    "build:music": "npm --prefix music/Backend run build",
+    "build:notification": "npm --prefix notification/Backend run build",
+    "build:all": "npm run build:auth && npm run build:music && npm run build:notification && npm run build:web",
+    "test:auth": "npm --prefix Auth/Backend test",
+    "test:music": "npm --prefix music/Backend test",
+    "test:notification": "npm --prefix notification/Backend test",
+    "test:all": "npm run test:auth && npm run test:music && npm run test:notification"
+  },
+  "keywords": [
+    "tunease",
+    "nextjs",
+    "typescript",
+    "lossless-audio",
+    "streaming"
+  ],
+  "author": "Tunease Team",
+  "license": "ISC"
+}

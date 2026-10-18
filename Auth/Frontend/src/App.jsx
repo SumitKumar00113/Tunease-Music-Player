@@ -4,7 +4,7 @@ import { Logo } from './components/Logo';
 import { ArrowLeft } from 'lucide-react';
 import { AppRoutes } from './routes';
 
-const API_BASE_URL = import.meta.env.VITE_AUTH_API_URL || 'http://localhost:3000/api/auth';
+const API_BASE_URL = import.meta.env.VITE_AUTH_API_URL || 'https://tunease-auth-service-latest.onrender.com/api/auth';
 const LANDING_URL = import.meta.env.VITE_LANDING_URL || 'http://localhost:5173';
 
 export function App() {

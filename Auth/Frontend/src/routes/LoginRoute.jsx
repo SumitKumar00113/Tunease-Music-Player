@@ -3,6 +3,8 @@ import { LoginForm } from '../components/LoginForm';
 import { LogIn, UserPlus } from 'lucide-react';
 import { AUTH_ROUTES } from './routes.config';
 
+const MUSIC_APP_URL = import.meta.env.VITE_MUSIC_APP_URL || 'http://localhost:5174';
+
 export function LoginRoute({ apiBaseUrl, onLoginSuccess }) {
   const navigate = useNavigate();
 
@@ -32,6 +34,11 @@ export function LoginRoute({ apiBaseUrl, onLoginSuccess }) {
         apiBaseUrl={apiBaseUrl}
         onSuccess={(user) => {
           onLoginSuccess(user);
+          const role = user?.role?.toLowerCase();
+          if (role === 'user' || role === 'listener') {
+            window.location.assign(`${MUSIC_APP_URL.replace(/\/$/, '')}/user_dashboard`);
+            return;
+          }
           navigate(AUTH_ROUTES.PROFILE.path);
         }}
         onSwitchToRegister={() => navigate(AUTH_ROUTES.REGISTER.path)}

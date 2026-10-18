@@ -3,6 +3,7 @@ const multer=require("multer");
 const musicMiddleware=require("../middleware/auth.middleware");
 const musicController=require("../controllers/music.controller");
 const spotifyController=require("../controllers/spotify.controller");
+const { AUDIO_LIMIT } = require("../services/media-validation.service");
 
 
 
@@ -10,6 +11,7 @@ const router=express.Router();
 
 const upload = multer({
   storage: multer.memoryStorage(),
+  limits: { fileSize: AUDIO_LIMIT, files: 2, fields: 20 },
 });
 
 router.get(

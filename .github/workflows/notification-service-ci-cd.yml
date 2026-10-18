@@ -1,0 +1,72 @@
+name: Tunease Notification Service CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "notification/Backend/**"
+      - ".github/workflows/notification-service-ci-cd.yml"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "notification/Backend/**"
+      - ".github/workflows/notification-service-ci-cd.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test Notification Service
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: notification/Backend
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: notification/Backend/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Run Tests
+        run: npm test --if-present
+
+  docker:
+    name: Build and Push Docker Image
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: notification/Backend
+          file: notification/Backend/dockerfile
+          push: true
+          tags: sumit001s/tunease-notification-service:latest

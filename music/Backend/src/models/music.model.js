@@ -28,6 +28,16 @@ const mongoose = require("mongoose");
         default: null,
       },
 
+      albumName: {
+        type: String,
+        trim: true,
+      },
+
+      featuredArtists: {
+        type: String,
+        trim: true,
+      },
+
       genre: {
         type: String,
         trim: true,

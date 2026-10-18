@@ -157,19 +157,19 @@ export const AuthModal = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 animate-fadeIn">
-      <div className="relative w-full max-w-md bg-[#0D1B13] rounded-3xl p-6 sm:p-8 border border-[#24392B] shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto no-scrollbar">
+      <div className="relative w-full max-w-md bg-[#0C0C0E] rounded-3xl p-6 sm:p-8 border border-[#29292D] shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto no-scrollbar">
         
         {/* HEADER */}
-        <div className="flex items-center justify-between border-b border-[#24392B] pb-4">
+        <div className="flex items-center justify-between border-b border-[#29292D] pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#1ED760]/20 border border-[#1ED760]/40 flex items-center justify-center shadow-lg shadow-[#1ED760]/20">
-              <Sparkles className="w-5 h-5 text-[#1ED760]" />
+            <div className="w-10 h-10 rounded-2xl bg-[#60cfd8]/20 border border-[#60cfd8]/40 flex items-center justify-center shadow-lg shadow-[#60cfd8]/20">
+              <Sparkles className="w-5 h-5 text-[#60cfd8]" />
             </div>
             <div>
-              <h3 className="text-lg font-extrabold text-[#F5F7F5] font-['Space_Grotesk']">
+              <h3 className="text-lg font-extrabold text-[#F5F5F5] font-['Space_Grotesk']">
                 {user ? 'Account Settings' : mode === 'login' ? 'Sign In to Tunease' : 'Create Tunease Account'}
               </h3>
-              <p className="text-xs text-[#A0B0A5]">
+              <p className="text-xs text-[#A1A1AA]">
                 {user ? 'Manage your audio studio profile' : 'Connect to live Tunease Auth & Studio'}
               </p>
             </div>
@@ -177,7 +177,7 @@ export const AuthModal = () => {
 
           <button
             onClick={() => setIsAuthModalOpen(false)}
-            className="p-2 rounded-full bg-[#12251A] text-[#A0B0A5] hover:text-[#F5F7F5] hover:bg-[#1A3324] transition-colors"
+            className="p-2 rounded-full bg-[#141416] text-[#A1A1AA] hover:text-[#F5F5F5] hover:bg-[#26262B] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -189,14 +189,14 @@ export const AuthModal = () => {
             /* EDIT PROFILE FORM */
             <form onSubmit={handleSaveProfile} className="space-y-4 py-1 text-left">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-[#1ED760] uppercase tracking-wider flex items-center gap-1.5">
+                <span className="text-xs font-bold text-[#60cfd8] uppercase tracking-wider flex items-center gap-1.5">
                   <Edit3 className="w-3.5 h-3.5" />
                   <span>Update Profile Info</span>
                 </span>
                 <button
                   type="button"
                   onClick={() => setIsEditingProfile(false)}
-                  className="text-xs text-[#A0B0A5] hover:text-[#F5F7F5]"
+                  className="text-xs text-[#A1A1AA] hover:text-[#F5F5F5]"
                 >
                   Cancel
                 </button>
@@ -205,64 +205,64 @@ export const AuthModal = () => {
               {/* NAME FIELDS */}
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-[#A0B0A5]">First Name</label>
+                  <label className="text-[11px] font-bold text-[#A1A1AA]">First Name</label>
                   <input
                     type="text"
                     required
                     value={editFirstName}
                     onChange={(e) => setEditFirstName(e.target.value)}
-                    className="w-full bg-[#12251A] text-[#F5F7F5] text-xs p-2.5 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none"
+                    className="w-full bg-[#141416] text-[#F5F5F5] text-xs p-2.5 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-[#A0B0A5]">Last Name</label>
+                  <label className="text-[11px] font-bold text-[#A1A1AA]">Last Name</label>
                   <input
                     type="text"
                     value={editLastName}
                     onChange={(e) => setEditLastName(e.target.value)}
-                    className="w-full bg-[#12251A] text-[#F5F7F5] text-xs p-2.5 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none"
+                    className="w-full bg-[#141416] text-[#F5F5F5] text-xs p-2.5 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* MOBILE NO */}
               <div className="space-y-1">
-                <label className="text-[11px] font-bold text-[#A0B0A5]">Mobile Phone</label>
+                <label className="text-[11px] font-bold text-[#A1A1AA]">Mobile Phone</label>
                 <input
                   type="tel"
                   value={editMobileNo}
                   onChange={(e) => setEditMobileNo(e.target.value)}
                   placeholder="e.g. 9876543210"
-                  className="w-full bg-[#12251A] text-[#F5F7F5] text-xs p-2.5 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none"
+                  className="w-full bg-[#141416] text-[#F5F5F5] text-xs p-2.5 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none"
                 />
               </div>
 
               {/* AVATAR PHOTO URL */}
               <div className="space-y-1">
-                <label className="text-[11px] font-bold text-[#A0B0A5]">Avatar Image URL</label>
+                <label className="text-[11px] font-bold text-[#A1A1AA]">Avatar Image URL</label>
                 <input
                   type="url"
                   value={editProfilePhoto}
                   onChange={(e) => setEditProfilePhoto(e.target.value)}
                   placeholder="https://example.com/avatar.jpg"
-                  className="w-full bg-[#12251A] text-[#F5F7F5] text-xs p-2.5 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none"
+                  className="w-full bg-[#141416] text-[#F5F5F5] text-xs p-2.5 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none"
                 />
               </div>
 
               {/* ROLE SELECTION */}
               <div className="space-y-1">
-                <label className="text-[11px] font-bold text-[#A0B0A5]">Account Type</label>
+                <label className="text-[11px] font-bold text-[#A1A1AA]">Account Type</label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setEditRole('user')}
                     className={`py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
                       editRole === 'user'
-                        ? 'bg-[#1ED760]/20 border-[#1ED760] text-white'
-                        : 'bg-[#12251A] border-[#24392B] text-[#A0B0A5] hover:text-[#F5F7F5]'
+                        ? 'bg-[#60cfd8]/20 border-[#60cfd8] text-white'
+                        : 'bg-[#141416] border-[#29292D] text-[#A1A1AA] hover:text-[#F5F5F5]'
                     }`}
                   >
-                    <Headphones className="w-3.5 h-3.5 text-[#1ED760]" />
+                    <Headphones className="w-3.5 h-3.5 text-[#60cfd8]" />
                     <span>Listener</span>
                   </button>
                   <button
@@ -270,11 +270,11 @@ export const AuthModal = () => {
                     onClick={() => setEditRole('artist')}
                     className={`py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
                       editRole === 'artist'
-                        ? 'bg-[#1ED760]/20 border-[#1ED760] text-white'
-                        : 'bg-[#12251A] border-[#24392B] text-[#A0B0A5] hover:text-[#F5F7F5]'
+                        ? 'bg-[#60cfd8]/20 border-[#60cfd8] text-white'
+                        : 'bg-[#141416] border-[#29292D] text-[#A1A1AA] hover:text-[#F5F5F5]'
                     }`}
                   >
-                    <Music2 className="w-3.5 h-3.5 text-[#1ED760]" />
+                    <Music2 className="w-3.5 h-3.5 text-[#60cfd8]" />
                     <span>Creator / Artist</span>
                   </button>
                 </div>
@@ -285,7 +285,7 @@ export const AuthModal = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="flex-1 py-2.5 rounded-xl bg-[#1ED760] hover:bg-[#1fdf64] text-black font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#1ED760]/25 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl bg-[#60cfd8] hover:bg-[#4ebcc7] text-black font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#60cfd8]/25 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50"
                 >
                   {isLoading ? (
                     <>
@@ -302,7 +302,7 @@ export const AuthModal = () => {
                 <button
                   type="button"
                   onClick={() => setIsEditingProfile(false)}
-                  className="px-4 py-2.5 rounded-xl bg-[#12251A] text-[#A0B0A5] hover:text-[#F5F7F5] border border-[#24392B] text-xs font-bold"
+                  className="px-4 py-2.5 rounded-xl bg-[#141416] text-[#A1A1AA] hover:text-[#F5F5F5] border border-[#29292D] text-xs font-bold"
                 >
                   Cancel
                 </button>
@@ -316,30 +316,30 @@ export const AuthModal = () => {
                   <img
                     src={user.profilePhoto}
                     alt="Avatar"
-                    className="w-16 h-16 rounded-full object-cover border-2 border-[#1ED760] shadow-lg shadow-[#1ED760]/25 mx-auto"
+                    className="w-16 h-16 rounded-full object-cover border-2 border-[#60cfd8] shadow-lg shadow-[#60cfd8]/25 mx-auto"
                   />
                 ) : (
-                  <div className="w-16 h-16 rounded-full bg-[#12251A] border-2 border-[#1ED760] text-[#1ED760] flex items-center justify-center text-xl font-bold mx-auto shadow-lg shadow-[#1ED760]/20">
+                  <div className="w-16 h-16 rounded-full bg-[#141416] border-2 border-[#60cfd8] text-[#60cfd8] flex items-center justify-center text-xl font-bold mx-auto shadow-lg shadow-[#60cfd8]/20">
                     {user.fullName?.firstName ? user.fullName.firstName[0].toUpperCase() : 'U'}
                   </div>
                 )}
-                <div className="absolute bottom-0 right-0 w-5 h-5 bg-[#1ED760] rounded-full border-2 border-[#0D1B13] flex items-center justify-center text-black text-[9px] font-bold">
+                <div className="absolute bottom-0 right-0 w-5 h-5 bg-[#60cfd8] rounded-full border-2 border-[#0C0C0E] flex items-center justify-center text-black text-[9px] font-bold">
                   ✓
                 </div>
               </div>
 
               <div>
-                <h4 className="text-base font-bold text-[#F5F7F5]">
+                <h4 className="text-base font-bold text-[#F5F5F5]">
                   {typeof user.fullName === 'string'
                     ? user.fullName
                     : `${user.fullName?.firstName || ''} ${user.fullName?.lastName || ''}`.trim() || user.email}
                 </h4>
-                <p className="text-xs text-[#8BE9A7] font-semibold uppercase tracking-wider">
+                <p className="text-xs text-[#32aeb9] font-semibold uppercase tracking-wider">
                   {user.role === 'artist' ? 'Creator / Artist' : (user.role || 'Listener')}
                 </p>
-                <p className="text-xs text-[#A0B0A5]">{user.email}</p>
+                <p className="text-xs text-[#A1A1AA]">{user.email}</p>
                 {user.mobileNo && (
-                  <p className="text-[11px] text-[#A0B0A5]/80 mt-0.5">Mobile: {user.mobileNo}</p>
+                  <p className="text-[11px] text-[#A1A1AA]/80 mt-0.5">Mobile: {user.mobileNo}</p>
                 )}
               </div>
 
@@ -347,22 +347,22 @@ export const AuthModal = () => {
               <div className="pt-2 space-y-2">
                 <button
                   onClick={startProfileEdit}
-                  className="w-full py-2.5 rounded-xl bg-[#12251A] hover:bg-[#1A3324] text-[#F5F7F5] font-bold text-xs border border-[#24392B] flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  className="w-full py-2.5 rounded-xl bg-[#141416] hover:bg-[#26262B] text-[#F5F5F5] font-bold text-xs border border-[#29292D] flex items-center justify-center gap-2 transition-all cursor-pointer"
                 >
-                  <Edit3 className="w-3.5 h-3.5 text-[#1ED760]" />
+                  <Edit3 className="w-3.5 h-3.5 text-[#60cfd8]" />
                   <span>Edit Profile Details</span>
                 </button>
 
                 <div className="flex gap-2">
                   <button
                     onClick={logoutUser}
-                    className="w-full py-2.5 rounded-xl bg-[#12251A] hover:bg-red-500/20 text-red-400 border border-[#24392B] font-bold text-xs transition-colors"
+                    className="w-full py-2.5 rounded-xl bg-[#141416] hover:bg-red-500/20 text-red-400 border border-[#29292D] font-bold text-xs transition-colors"
                   >
                     Sign Out
                   </button>
                   <button
                     onClick={() => setIsAuthModalOpen(false)}
-                    className="w-full py-2.5 rounded-xl bg-[#1ED760] hover:bg-[#1fdf64] text-black font-bold text-xs shadow-md shadow-[#1ED760]/25"
+                    className="w-full py-2.5 rounded-xl bg-[#60cfd8] hover:bg-[#4ebcc7] text-black font-bold text-xs shadow-md shadow-[#60cfd8]/25"
                   >
                     Continue to App
                   </button>
@@ -373,13 +373,13 @@ export const AuthModal = () => {
         ) : (
           <>
             {/* TAB SELECTOR */}
-            <div className="grid grid-cols-2 gap-2 bg-[#12251A] p-1 rounded-2xl border border-[#24392B]">
+            <div className="grid grid-cols-2 gap-2 bg-[#141416] p-1 rounded-2xl border border-[#29292D]">
               <button
                 onClick={() => { setMode('login'); setErrorMsg(''); }}
                 className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
                   mode === 'login'
-                    ? 'bg-[#1ED760] text-black shadow-lg shadow-[#1ED760]/20'
-                    : 'text-[#A0B0A5] hover:text-[#F5F7F5]'
+                    ? 'bg-[#60cfd8] text-black shadow-lg shadow-[#60cfd8]/20'
+                    : 'text-[#A1A1AA] hover:text-[#F5F5F5]'
                 }`}
               >
                 <LogIn className="w-3.5 h-3.5" />
@@ -389,8 +389,8 @@ export const AuthModal = () => {
                 onClick={() => { setMode('register'); setErrorMsg(''); }}
                 className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
                   mode === 'register'
-                    ? 'bg-[#1ED760] text-black shadow-lg shadow-[#1ED760]/20'
-                    : 'text-[#A0B0A5] hover:text-[#F5F7F5]'
+                    ? 'bg-[#60cfd8] text-black shadow-lg shadow-[#60cfd8]/20'
+                    : 'text-[#A1A1AA] hover:text-[#F5F5F5]'
                 }`}
               >
                 <UserPlus className="w-3.5 h-3.5" />
@@ -406,8 +406,8 @@ export const AuthModal = () => {
               </div>
             )}
             {successMsg && (
-              <div className="p-3 rounded-xl bg-[#1ED760]/15 border border-[#1ED760]/30 text-[#8BE9A7] text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-[#1ED760]" />
+              <div className="p-3 rounded-xl bg-[#60cfd8]/15 border border-[#60cfd8]/30 text-[#32aeb9] text-xs flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-[#60cfd8]" />
                 <span>{successMsg}</span>
               </div>
             )}
@@ -417,35 +417,35 @@ export const AuthModal = () => {
                 <>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1">
-                      <label className="text-[#A0B0A5] font-bold">First Name</label>
+                      <label className="text-[#A1A1AA] font-bold">First Name</label>
                       <input
                         type="text"
                         required
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         placeholder="John"
-                        className="w-full bg-[#12251A] text-[#F5F7F5] p-2.5 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none"
+                        className="w-full bg-[#141416] text-[#F5F5F5] p-2.5 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none"
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[#A0B0A5] font-bold">Last Name</label>
+                      <label className="text-[#A1A1AA] font-bold">Last Name</label>
                       <input
                         type="text"
                         required
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         placeholder="Doe"
-                        className="w-full bg-[#12251A] text-[#F5F7F5] p-2.5 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none"
+                        className="w-full bg-[#141416] text-[#F5F5F5] p-2.5 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[#A0B0A5] font-bold">Account Role</label>
+                    <label className="text-[#A1A1AA] font-bold">Account Role</label>
                     <select
                       value={role}
                       onChange={(e) => setRole(e.target.value)}
-                      className="w-full bg-[#12251A] text-[#F5F7F5] p-2.5 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none"
+                      className="w-full bg-[#141416] text-[#F5F5F5] p-2.5 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none"
                     >
                       <option value="artist">Artist & Creator (can upload & manage music)</option>
                       <option value="user">Listener (can play & create playlists)</option>
@@ -453,46 +453,46 @@ export const AuthModal = () => {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[#A0B0A5] font-bold">Mobile Number (Optional)</label>
+                    <label className="text-[#A1A1AA] font-bold">Mobile Number (Optional)</label>
                     <input
                       type="text"
                       value={mobileNo}
                       onChange={(e) => setMobileNo(e.target.value)}
                       placeholder="+1234567890"
-                      className="w-full bg-[#12251A] text-[#F5F7F5] p-2.5 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none"
+                      className="w-full bg-[#141416] text-[#F5F5F5] p-2.5 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none"
                     />
                   </div>
                 </>
               )}
 
               <div className="space-y-1">
-                <label className="text-[#A0B0A5] font-bold">Email Address</label>
+                <label className="text-[#A1A1AA] font-bold">Email Address</label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@tunease.com"
-                  className="w-full bg-[#12251A] text-[#F5F7F5] p-2.5 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none"
+                  className="w-full bg-[#141416] text-[#F5F5F5] p-2.5 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[#A0B0A5] font-bold">Password</label>
+                <label className="text-[#A1A1AA] font-bold">Password</label>
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-[#12251A] text-[#F5F7F5] p-2.5 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none"
+                  className="w-full bg-[#141416] text-[#F5F5F5] p-2.5 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full mt-2 py-3 rounded-xl bg-[#1ED760] hover:bg-[#1fdf64] text-black font-extrabold text-sm shadow-xl shadow-[#1ED760]/30 hover:scale-[1.01] transition-all disabled:opacity-50"
+                className="w-full mt-2 py-3 rounded-xl bg-[#60cfd8] hover:bg-[#4ebcc7] text-black font-extrabold text-sm shadow-xl shadow-[#60cfd8]/30 hover:scale-[1.01] transition-all disabled:opacity-50"
               >
                 {isLoading
                   ? 'Connecting to Backend...'

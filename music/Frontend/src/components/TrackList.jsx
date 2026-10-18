@@ -15,8 +15,8 @@ export const TrackList = ({ tracks = [], showIndex = true, artistPage = false })
 
   if (!tracks || tracks.length === 0) {
     return (
-      <div className="py-12 text-center text-[#A0B0A5] space-y-2 bg-[#12251A]/40 rounded-2xl border border-[#24392B]">
-        <Music className="w-10 h-10 mx-auto text-[#24392B]" />
+      <div className="py-12 text-center text-[#A1A1AA] space-y-2 bg-[#141416]/40 rounded-2xl border border-[#29292D]">
+        <Music className="w-10 h-10 mx-auto text-[#29292D]" />
         <p className="text-sm font-medium">No tracks found in this category.</p>
       </div>
     );
@@ -26,7 +26,7 @@ export const TrackList = ({ tracks = [], showIndex = true, artistPage = false })
     <div className="w-full space-y-1">
       
       {/* TABLE HEADER */}
-      <div className={`grid grid-cols-12 gap-4 px-4 py-2 text-[11px] font-bold text-[#A0B0A5] uppercase tracking-wider border-b border-[#24392B] select-none ${artistPage ? 'artist-track-grid' : ''}`}>
+      <div className={`grid grid-cols-12 gap-4 px-4 py-2 text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider border-b border-[#29292D] select-none ${artistPage ? 'artist-track-grid' : ''}`}>
         <div className="col-span-1 text-center">#</div>
         <div className={artistPage ? 'col-span-10 sm:col-span-9' : 'col-span-6 sm:col-span-5'}>Title</div>
         {!artistPage && <div className="hidden sm:block col-span-3">Album</div>}
@@ -48,8 +48,8 @@ export const TrackList = ({ tracks = [], showIndex = true, artistPage = false })
             onClick={() => playTrack(track, tracks)}
             className={`group grid grid-cols-12 gap-4 items-center px-4 py-2.5 rounded-xl cursor-pointer transition-all duration-200 ${artistPage ? 'artist-track-grid' : ''} ${
               isCurrent
-                ? 'bg-[#12251A] border border-[#1ED760]/30 text-[#F5F7F5]'
-                : 'hover:bg-[#12251A]/60 text-[#A0B0A5] border border-transparent hover:border-[#24392B]'
+                ? 'bg-[#141416] border border-[#60cfd8]/30 text-[#F5F5F5]'
+                : 'hover:bg-[#141416]/60 text-[#A1A1AA] border border-transparent hover:border-[#29292D]'
             }`}
           >
             {/* INDEX / PLAY ICON */}
@@ -57,15 +57,15 @@ export const TrackList = ({ tracks = [], showIndex = true, artistPage = false })
               {isCurrent ? (
                 isPlaying ? (
                   <div className="flex items-end gap-0.5 h-3">
-                    <span className="w-0.5 bg-[#1ED760] animate-eq-1 rounded-full" />
-                    <span className="w-0.5 bg-[#1ED760] animate-eq-2 rounded-full" />
-                    <span className="w-0.5 bg-[#8BE9A7] animate-eq-3 rounded-full" />
+                    <span className="w-0.5 bg-[#60cfd8] animate-eq-1 rounded-full" />
+                    <span className="w-0.5 bg-[#60cfd8] animate-eq-2 rounded-full" />
+                    <span className="w-0.5 bg-[#32aeb9] animate-eq-3 rounded-full" />
                   </div>
                 ) : (
-                  <Play className="w-3.5 h-3.5 text-[#1ED760] fill-[#1ED760]" />
+                  <Play className="w-3.5 h-3.5 text-[#60cfd8] fill-[#60cfd8]" />
                 )
               ) : (
-                <span className="text-xs font-semibold text-[#A0B0A5] group-hover:hidden">
+                <span className="text-xs font-semibold text-[#A1A1AA] group-hover:hidden">
                   {index + 1}
                 </span>
               )}
@@ -75,7 +75,7 @@ export const TrackList = ({ tracks = [], showIndex = true, artistPage = false })
                     e.stopPropagation();
                     playTrack(track, tracks);
                   }}
-                  className="hidden group-hover:block text-[#F5F7F5] hover:text-[#1ED760] cursor-pointer"
+                  className="hidden group-hover:block text-[#F5F5F5] hover:text-[#60cfd8] cursor-pointer"
                 >
                   <Play className="w-3.5 h-3.5 fill-current" />
                 </button>
@@ -87,25 +87,25 @@ export const TrackList = ({ tracks = [], showIndex = true, artistPage = false })
               {track.coverUrl && <img
                 src={track.coverUrl}
                 alt={track.title}
-                className="w-10 h-10 rounded-lg object-cover shadow flex-shrink-0 bg-[#07110C]"
+                className="w-10 h-10 rounded-lg object-cover shadow flex-shrink-0 bg-[#050505]"
               />}
               <div className="min-w-0">
-                <p className={`text-xs font-bold truncate transition-colors ${isCurrent ? 'text-[#1ED760]' : 'text-[#F5F7F5]'}`}>
+                <p className={`text-xs font-bold truncate transition-colors ${isCurrent ? 'text-[#60cfd8]' : 'text-[#F5F5F5]'}`}>
                   {track.title}
                 </p>
-                {!artistPage && <p className="text-[11px] text-[#A0B0A5] truncate">
+                {!artistPage && <p className="text-[11px] text-[#A1A1AA] truncate">
                   {track.artistName}
                 </p>}
               </div>
             </div>
 
             {/* ALBUM */}
-            {!artistPage && <div className="hidden sm:block col-span-3 text-xs text-[#A0B0A5] truncate">
+            {!artistPage && <div className="hidden sm:block col-span-3 text-xs text-[#A1A1AA] truncate">
               {track.album || 'Single'}
             </div>}
 
             {/* STREAMS */}
-            {!artistPage && <div className="hidden md:block col-span-1 text-xs font-mono text-[#A0B0A5] text-right truncate">
+            {!artistPage && <div className="hidden md:block col-span-1 text-xs font-mono text-[#A1A1AA] text-right truncate">
               {(track.playCount || 0).toLocaleString()}
             </div>}
 
@@ -117,10 +117,10 @@ export const TrackList = ({ tracks = [], showIndex = true, artistPage = false })
                   e.stopPropagation();
                   toggleLikeTrack(trackId);
                 }}
-                className="text-[#A0B0A5] hover:text-[#1ED760] transition-colors cursor-pointer p-0.5"
+                className="text-[#A1A1AA] hover:text-[#60cfd8] transition-colors cursor-pointer p-0.5"
                 title={isLiked ? 'Unlike' : 'Like'}
               >
-                <Heart className={`w-4 h-4 ${isLiked ? 'text-[#1ED760] fill-[#1ED760]' : ''}`} />
+                <Heart className={`w-4 h-4 ${isLiked ? 'text-[#60cfd8] fill-[#60cfd8]' : ''}`} />
               </button>
               </>}
 
@@ -129,13 +129,13 @@ export const TrackList = ({ tracks = [], showIndex = true, artistPage = false })
                   e.stopPropagation();
                   addTrackToQueue(track);
                 }}
-                className="text-[#A0B0A5] hover:text-[#F5F7F5] transition-colors cursor-pointer p-0.5"
+                className="text-[#A1A1AA] hover:text-[#F5F5F5] transition-colors cursor-pointer p-0.5"
                 title="Add to queue"
               >
                 <Plus className="w-4 h-4" />
               </button>}
 
-              <span className="text-[#A0B0A5] w-10 text-right">
+              <span className="text-[#A1A1AA] w-10 text-right">
                 {formatTime(track.duration)}
               </span>
             </div>

@@ -52,25 +52,25 @@ export const PlaylistModal = () => {
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 animate-fadeIn">
       
-      <div className="relative w-full max-w-lg bg-[#0D1B13] rounded-3xl p-6 sm:p-8 border border-[#24392B] shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto no-scrollbar">
+      <div className="relative w-full max-w-lg bg-[#0C0C0E] rounded-3xl p-6 sm:p-8 border border-[#29292D] shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto no-scrollbar">
         
         {/* MODAL HEADER */}
-        <div className="flex items-center justify-between border-b border-[#24392B] pb-4">
+        <div className="flex items-center justify-between border-b border-[#29292D] pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#1ED760]/20 border border-[#1ED760]/40 flex items-center justify-center shadow-lg shadow-[#1ED760]/20">
-              <ListMusic className="w-5 h-5 text-[#1ED760]" />
+            <div className="w-10 h-10 rounded-2xl bg-[#60cfd8]/20 border border-[#60cfd8]/40 flex items-center justify-center shadow-lg shadow-[#60cfd8]/20">
+              <ListMusic className="w-5 h-5 text-[#60cfd8]" />
             </div>
             <div>
-              <h3 className="text-lg font-extrabold text-[#F5F7F5] font-['Space_Grotesk']">
+              <h3 className="text-lg font-extrabold text-[#F5F5F5] font-['Space_Grotesk']">
                 Create Playlist
               </h3>
-              <p className="text-xs text-[#A0B0A5]">Assemble your custom soundscape</p>
+              <p className="text-xs text-[#A1A1AA]">Assemble your custom soundscape</p>
             </div>
           </div>
 
           <button
             onClick={() => setIsCreatePlaylistModalOpen(false)}
-            className="p-2 rounded-full bg-[#12251A] text-[#A0B0A5] hover:text-[#F5F7F5] hover:bg-[#1A3324] transition-colors"
+            className="p-2 rounded-full bg-[#141416] text-[#A1A1AA] hover:text-[#F5F5F5] hover:bg-[#26262B] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -80,33 +80,33 @@ export const PlaylistModal = () => {
           
           {/* PLAYLIST NAME */}
           <div className="space-y-1">
-            <label className="text-[#A0B0A5] font-bold">Playlist Name *</label>
+            <label className="text-[#A1A1AA] font-bold">Playlist Name *</label>
             <input
               type="text"
               required
               value={playlistName}
               onChange={(e) => setPlaylistName(e.target.value)}
               placeholder="e.g. Late Night Cyber Vibes"
-              className="w-full bg-[#12251A] text-[#F5F7F5] p-3 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none"
+              className="w-full bg-[#141416] text-[#F5F5F5] p-3 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none"
             />
           </div>
 
           {/* DESCRIPTION */}
           <div className="space-y-1">
-            <label className="text-[#A0B0A5] font-bold">Description</label>
+            <label className="text-[#A1A1AA] font-bold">Description</label>
             <textarea
               rows={2}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe the mood or genre of this playlist..."
-              className="w-full bg-[#12251A] text-[#F5F7F5] p-3 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none resize-none"
+              className="w-full bg-[#141416] text-[#F5F5F5] p-3 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none resize-none"
             />
           </div>
 
           {/* SONG SELECTION CHECKBOX LIST */}
           <div className="space-y-2">
-            <label className="text-[#A0B0A5] font-bold">Select Initial Songs ({selectedSongIds.length})</label>
-            <div className="max-h-40 overflow-y-auto no-scrollbar space-y-1 p-2 rounded-xl bg-[#12251A] border border-[#24392B]">
+            <label className="text-[#A1A1AA] font-bold">Select Initial Songs ({selectedSongIds.length})</label>
+            <div className="max-h-40 overflow-y-auto no-scrollbar space-y-1 p-2 rounded-xl bg-[#141416] border border-[#29292D]">
               {tracksToChoose.map(track => {
                 const trackId = track.id || track._id;
                 const isSelected = selectedSongIds.includes(trackId);
@@ -115,20 +115,20 @@ export const PlaylistModal = () => {
                     key={trackId}
                     onClick={() => toggleSongSelection(trackId)}
                     className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all ${
-                      isSelected ? 'bg-[#1ED760]/15 border border-[#1ED760]/40 text-white' : 'hover:bg-white/5 text-[#A0B0A5]'
+                      isSelected ? 'bg-[#60cfd8]/15 border border-[#60cfd8]/40 text-white' : 'hover:bg-white/5 text-[#A1A1AA]'
                     }`}
                   >
                     <div className="flex items-center gap-2 min-w-0">
-                      <img src={track.coverUrl} alt={track.title} className="w-7 h-7 rounded-md object-cover flex-shrink-0 border border-[#24392B]" />
+                      <img src={track.coverUrl} alt={track.title} className="w-7 h-7 rounded-md object-cover flex-shrink-0 border border-[#29292D]" />
                       <div className="min-w-0">
-                        <p className={`font-bold text-[11px] truncate ${isSelected ? 'text-[#1ED760]' : 'text-[#F5F7F5]'}`}>{track.title}</p>
-                        <p className="text-[10px] text-[#A0B0A5] truncate">{track.artistName}</p>
+                        <p className={`font-bold text-[11px] truncate ${isSelected ? 'text-[#60cfd8]' : 'text-[#F5F5F5]'}`}>{track.title}</p>
+                        <p className="text-[10px] text-[#A1A1AA] truncate">{track.artistName}</p>
                       </div>
                     </div>
                     {isSelected ? (
-                      <Check className="w-4 h-4 text-[#1ED760] flex-shrink-0" />
+                      <Check className="w-4 h-4 text-[#60cfd8] flex-shrink-0" />
                     ) : (
-                      <Plus className="w-4 h-4 text-[#A0B0A5] flex-shrink-0" />
+                      <Plus className="w-4 h-4 text-[#A1A1AA] flex-shrink-0" />
                     )}
                   </div>
                 );
@@ -143,9 +143,9 @@ export const PlaylistModal = () => {
               id="publicCheck"
               checked={isPublic}
               onChange={(e) => setIsPublic(e.target.checked)}
-              className="w-4 h-4 accent-[#1ED760] rounded"
+              className="w-4 h-4 accent-[#60cfd8] rounded"
             />
-            <label htmlFor="publicCheck" className="text-[#A0B0A5] cursor-pointer hover:text-[#F5F7F5]">
+            <label htmlFor="publicCheck" className="text-[#A1A1AA] cursor-pointer hover:text-[#F5F5F5]">
               Make playlist public on your profile
             </label>
           </div>
@@ -154,7 +154,7 @@ export const PlaylistModal = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3.5 rounded-2xl bg-[#1ED760] hover:bg-[#1fdf64] text-black font-extrabold text-sm shadow-xl shadow-[#1ED760]/30 hover:scale-[1.01] transition-all disabled:opacity-50"
+            className="w-full py-3.5 rounded-2xl bg-[#60cfd8] hover:bg-[#4ebcc7] text-black font-extrabold text-sm shadow-xl shadow-[#60cfd8]/30 hover:scale-[1.01] transition-all disabled:opacity-50"
           >
             {isSubmitting ? 'Creating Playlist...' : 'Create Playlist'}
           </button>

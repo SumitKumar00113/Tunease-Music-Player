@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "test": "jest --runInBand --forceExit",
-    "dev": "npx nodemon server.js",
-    "start": "node server.js"
+    "dev": "tsc -w",
+    "start": "node dist/server.js"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,13 @@
     "nodemailer": "^10.0.13"
   },
   "devDependencies": {
-    "jest": "^30.5.2"
+    "@types/amqplib": "^0.10.8",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^26.6.5",
+    "@types/nodemailer": "^8.0.2",
+    "jest": "^30.5.2",
+    "ts-jest": "^29.4.15",
+    "typescript": "~5.8.2"
   }
 }

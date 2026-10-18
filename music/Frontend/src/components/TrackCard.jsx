@@ -21,10 +21,10 @@ export const TrackCard = ({ track, trackList }) => {
   return (
     <div 
       onClick={() => playTrack(track, trackList)}
-      className="group relative rounded-2xl bg-[#12251A] p-3.5 hover:bg-[#162e20] border border-[#24392B] hover:border-[#1ED760]/40 transition-all duration-300 flex flex-col justify-between select-none cursor-pointer shadow-md hover:shadow-xl hover:-translate-y-1"
+      className="group relative rounded-2xl bg-[#141416] p-3.5 hover:bg-[#20140F] border border-[#29292D] hover:border-[#60cfd8]/40 transition-all duration-300 flex flex-col justify-between select-none cursor-pointer shadow-md hover:shadow-xl hover:-translate-y-1"
     >
       {/* COVER IMAGE & HOVER PLAY OVERLAY */}
-      <div className="relative aspect-square w-full rounded-xl overflow-hidden mb-3 shadow-md bg-[#07110C]">
+      <div className="relative aspect-square w-full rounded-xl overflow-hidden mb-3 shadow-md bg-[#050505]">
         <img
           src={track.coverUrl}
           alt={track.title}
@@ -33,7 +33,7 @@ export const TrackCard = ({ track, trackList }) => {
 
         {/* EXPLICIT BADGE */}
         {track.isExplicit && (
-          <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/70 backdrop-blur-md text-[9px] font-bold text-[#F5F7F5] border border-white/10 uppercase">
+          <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/70 backdrop-blur-md text-[9px] font-bold text-[#F5F5F5] border border-white/10 uppercase">
             Explicit
           </span>
         )}
@@ -46,7 +46,7 @@ export const TrackCard = ({ track, trackList }) => {
         }`}>
           <button
             onClick={handlePlayClick}
-            className="w-11 h-11 rounded-full bg-[#1ED760] hover:bg-[#1fdf65] text-[#07110C] flex items-center justify-center shadow-xl shadow-black/60 hover:scale-108 active:scale-95 transition-all cursor-pointer"
+            className="w-11 h-11 rounded-full bg-[#60cfd8] hover:bg-[#4ebcc7] text-[#050505] flex items-center justify-center shadow-xl shadow-black/60 hover:scale-108 active:scale-95 transition-all cursor-pointer"
             title={isCurrent && isPlaying ? 'Pause' : 'Play'}
           >
             {isCurrent && isPlaying ? (
@@ -61,7 +61,7 @@ export const TrackCard = ({ track, trackList }) => {
       {/* TRACK DETAILS */}
       <div className="space-y-1">
         <div className="flex items-center justify-between gap-1">
-          <h3 className={`text-sm font-bold truncate transition-colors ${isCurrent ? 'text-[#1ED760]' : 'text-[#F5F7F5]'}`}>
+          <h3 className={`text-sm font-bold truncate transition-colors ${isCurrent ? 'text-[#60cfd8]' : 'text-[#F5F5F5]'}`}>
             {track.title}
           </h3>
           <button
@@ -69,21 +69,21 @@ export const TrackCard = ({ track, trackList }) => {
               e.stopPropagation();
               toggleLikeTrack(trackId);
             }}
-            className="text-[#A0B0A5] hover:text-[#1ED760] transition-colors flex-shrink-0 cursor-pointer p-0.5"
+            className="text-[#A1A1AA] hover:text-[#60cfd8] transition-colors flex-shrink-0 cursor-pointer p-0.5"
             title={isLiked ? 'Unlike' : 'Like'}
           >
-            <Heart className={`w-4 h-4 ${isLiked ? 'text-[#1ED760] fill-[#1ED760]' : ''}`} />
+            <Heart className={`w-4 h-4 ${isLiked ? 'text-[#60cfd8] fill-[#60cfd8]' : ''}`} />
           </button>
         </div>
 
-        <p className="text-xs text-[#A0B0A5] truncate hover:text-[#F5F7F5] transition-colors">
+        <p className="text-xs text-[#A1A1AA] truncate hover:text-[#F5F5F5] transition-colors">
           {track.artistName}
         </p>
       </div>
 
       {/* BOTTOM ACTIONS */}
-      <div className="mt-3 pt-2 border-t border-[#24392B] flex items-center justify-between text-[11px] text-[#A0B0A5]">
-        <span className="px-2 py-0.5 rounded-full bg-[#0D1B13] text-[#8BE9A7] font-medium truncate max-w-[90px] border border-[#24392B]">
+      <div className="mt-3 pt-2 border-t border-[#29292D] flex items-center justify-between text-[11px] text-[#A1A1AA]">
+        <span className="px-2 py-0.5 rounded-full bg-[#0C0C0E] text-[#32aeb9] font-medium truncate max-w-[90px] border border-[#29292D]">
           {track.genre || 'Single'}
         </span>
 
@@ -92,7 +92,7 @@ export const TrackCard = ({ track, trackList }) => {
             e.stopPropagation();
             addTrackToQueue(track);
           }}
-          className="hover:text-[#1ED760] flex items-center gap-1 font-semibold transition-colors cursor-pointer"
+          className="hover:text-[#60cfd8] flex items-center gap-1 font-semibold transition-colors cursor-pointer"
           title="Add to queue"
         >
           <Plus className="w-3.5 h-3.5" />

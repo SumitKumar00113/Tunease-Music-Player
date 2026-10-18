@@ -48,7 +48,7 @@ export function AppRoutes() {
       <Route path={MUSIC_ROUTES.LIKED.path} element={<LikedRoute />} />
       <Route path={MUSIC_ROUTES.PLAYLIST.path} element={<PlaylistRoute />} />
       <Route path={MUSIC_ROUTES.ARTIST.path} element={<ArtistRoute />} />
-      <Route path={MUSIC_ROUTES.DASHBOARD.path} element={<DashboardRoute />} />
+      <Route path={`${MUSIC_ROUTES.DASHBOARD.path}/*`} element={<DashboardRoute />} />
 <Route path={MUSIC_ROUTES.USER_DASHBOARD.path}element={<UserDashboard/>} />
       {/* Catch-all redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />

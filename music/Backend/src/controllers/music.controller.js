@@ -2,14 +2,15 @@ const { uploadFile, getPreSignerUrl } = require("../services/storage.service");
 const musicModel = require("../models/music.model");
 const playlistModel = require("../models/playlist.model");
 const cacheService = require("../redis/cache.service");
+const { validateMediaFile } = require("../services/media-validation.service");
 
 const safeGetUrl = async (key) => {
     if (!key) return "";
     try {
         return await getPreSignerUrl(key);
     } catch (e) {
-        console.warn("Could not get presigned URL for key:", key, e.message);
-        return key;
+        console.warn("Could not generate media delivery URL:", e?.name || "Error");
+        return "";
     }
 };
 
@@ -23,6 +24,12 @@ const uploadMusic = async (req, res) => {
         });
     }
 
+    const audioValidationError = validateMediaFile(musicFile, "audio");
+    const coverValidationError = validateMediaFile(coverImageFile, "cover");
+    if (audioValidationError || coverValidationError) {
+        return res.status(400).json({ message: audioValidationError || coverValidationError });
+    }
+
     const user = req.user;
     if (!user) {
         return res.status(401).json({
@@ -32,9 +39,9 @@ const uploadMusic = async (req, res) => {
     const userId = user.id || user._id;
 
     try {
-        const { title, description, genre, duration, artistName } = req.body;
-        const musicKey = await uploadFile(musicFile);
-        const coverImageKey = await uploadFile(coverImageFile);
+        const { title, description, genre, duration, artistName, albumName, featuredArtists, releaseDate } = req.body;
+        const musicKey = await uploadFile(musicFile, "audio");
+        const coverImageKey = await uploadFile(coverImageFile, "covers");
 
         const computedArtistName = artistName || (user.fullName
             ? (typeof user.fullName === 'string' ? user.fullName : `${user.fullName.firstName || ''} ${user.fullName.lastName || ''}`.trim())
@@ -46,11 +53,13 @@ const uploadMusic = async (req, res) => {
             artistName: computedArtistName,
             artistId: userId,
             album: userId,
+            albumName: albumName || "",
+            featuredArtists: featuredArtists || "",
             genre: genre || "Pop",
             musicKey,
             coverImageKey,
             duration: Number(duration) || 180,
-            releaseDate: Date.now(),
+            releaseDate: releaseDate ? new Date(releaseDate) : Date.now(),
             playCount: 0,
             isPublished: true,
             isExplicit: false,
@@ -73,9 +82,9 @@ const uploadMusic = async (req, res) => {
             },
         });
     } catch (err) {
+        console.error("Music upload failed:", err?.status || err?.name || "provider error");
         return res.status(500).json({
-            message: "internal server error",
-            error: err.message,
+            message: "Media upload failed. Check the ImageKit configuration and try again.",
         });
     }
 };
@@ -447,15 +456,24 @@ const deleteMusic = async (req, res) => {
         const musicId = req.params.id;
         const userId = req.user.id || req.user._id;
 
-        const deletedMusic = await musicModel.findOneAndDelete({
-            _id: musicId,
-            createdBy: userId,
-        });
+        const musicToDelete = await musicModel.findOne({ _id: musicId, createdBy: userId });
 
-        if (!deletedMusic) {
+        if (!musicToDelete) {
             return res.status(404).json({
                 message: "Music not found or unauthorized",
             });
+        }
+
+        await musicModel.deleteOne({ _id: musicId, createdBy: userId });
+
+        // Remove DB reachability first. Legacy S3 files are deliberately left untouched.
+        const { deleteFile } = require("../services/storage.service");
+        const cleanupResults = await Promise.allSettled([
+            deleteFile(musicToDelete.musicKey),
+            deleteFile(musicToDelete.coverImageKey),
+        ]);
+        if (cleanupResults.some((result) => result.status === "rejected")) {
+            console.warn("Track removed but ImageKit media cleanup needs attention.");
         }
 
         // Invalidate music caches & patterns
@@ -464,7 +482,9 @@ const deleteMusic = async (req, res) => {
         await cacheService.delPattern("playlist:*");
 
         return res.status(200).json({
-            message: "Music deleted successfully",
+            message: cleanupResults.some((result) => result.status === "rejected")
+                ? "Music deleted; media cleanup could not be completed."
+                : "Music deleted successfully",
         });
     } catch (err) {
         return res.status(500).json({

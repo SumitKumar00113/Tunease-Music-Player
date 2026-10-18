@@ -1,0 +1,115 @@
+version: "3.8"
+
+services:
+  # ==========================================
+  # DATABASES & BROKERS
+  # ==========================================
+  mongo:
+    image: mongo:7.0
+    container_name: tunease-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    container_name: tunease-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: tunease-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+  # ==========================================
+  # MICROSERVICES
+  # ==========================================
+  auth-service:
+    build:
+      context: ./Auth/Backend
+      dockerfile: dockerfile
+    container_name: tunease-auth-service
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      MONGO_URI: mongodb://mongo:27017/tunease-auth
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      RABBIT_MQ_URL: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - mongo
+      - redis
+      - rabbitmq
+
+  music-service:
+    build:
+      context: ./music/Backend
+      dockerfile: dockerfile
+    container_name: tunease-music-service
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      PORT: 3002
+      MONGO_URI: mongodb://mongo:27017/tunease-music
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - mongo
+      - redis
+
+  notification-service:
+    build:
+      context: ./notification/Backend
+      dockerfile: dockerfile
+    container_name: tunease-notification-service
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      RABBIT_MQ_URL: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - redis
+      - rabbitmq
+
+  web-service:
+    build:
+      context: ./web
+      dockerfile: dockerfile
+    container_name: tunease-web-service
+    restart: unless-stopped
+    ports:
+      - "3005:3005"
+    environment:
+      PORT: 3005
+      NEXT_PUBLIC_AUTH_API_URL: http://localhost:3000/api/auth
+      NEXT_PUBLIC_MUSIC_API_URL: http://localhost:3002/api/music
+      NEXT_PUBLIC_SOCKET_URL: http://localhost:3002
+      NEXT_PUBLIC_APP_URL: http://localhost:3005
+    depends_on:
+      - auth-service
+      - music-service
+
+volumes:
+  mongo-data:
+  redis-data:
+  rabbitmq-data:

@@ -38,11 +38,15 @@ beforeEach(() => {
 describe("uploadMusic", () => {
     const musicFile = {
         originalname: "track.mp3",
-        buffer: Buffer.from("audio"),
+        mimetype: "audio/mpeg",
+        buffer: Buffer.from("ID3audio"),
+        size: 8,
     };
     const coverImageFile = {
         originalname: "cover.jpg",
-        buffer: Buffer.from("image"),
+        mimetype: "image/jpeg",
+        buffer: Buffer.from([0xff, 0xd8, 0xff, 0xd9]),
+        size: 4,
     };
     const request = () => ({
         req: {
@@ -76,8 +80,8 @@ describe("uploadMusic", () => {
 
         await uploadMusic(req, res);
 
-        expect(uploadFile).toHaveBeenNthCalledWith(1, musicFile);
-        expect(uploadFile).toHaveBeenNthCalledWith(2, coverImageFile);
+        expect(uploadFile).toHaveBeenNthCalledWith(1, musicFile, "audio");
+        expect(uploadFile).toHaveBeenNthCalledWith(2, coverImageFile, "covers");
         expect(getPreSignerUrl).toHaveBeenNthCalledWith(1, "audio-key");
         expect(getPreSignerUrl).toHaveBeenNthCalledWith(2, "cover-key");
         expect(musicModel.create).toHaveBeenCalledWith(expect.objectContaining({
@@ -129,8 +133,16 @@ describe("uploadMusic", () => {
 
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-            message: "internal server error",
+            message: "Media upload failed. Check the ImageKit configuration and try again.",
         }));
+    });
+
+    it("rejects invalid file contents before calling ImageKit", async () => {
+        const { req, res } = request();
+        req.files.music[0].buffer = Buffer.from("not audio");
+        await uploadMusic(req, res);
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(uploadFile).not.toHaveBeenCalled();
     });
 });
 

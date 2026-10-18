@@ -1,21 +1,31 @@
-
-name: Tunease Auth Service CI/CD
+name: Tunease Music Service CI/CD
 
 on:
   push:
     branches:
       - main
+    paths:
+      - "music/Backend/**"
+      - ".github/workflows/music-service-ci-cd.yml"
+
   pull_request:
     branches:
       - main
+    paths:
+      - "music/Backend/**"
+      - ".github/workflows/music-service-ci-cd.yml"
 
 permissions:
   contents: read
 
 jobs:
   test:
-    name: Test Auth Service
+    name: Test Music Service
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: music/Backend
 
     steps:
       - name: Checkout Code
@@ -26,9 +36,13 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: music/Backend/package-lock.json
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Build TypeScript
+        run: npm run build
 
       - name: Run Tests
         run: npm test --if-present
@@ -49,9 +63,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Image
+      - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: music/Backend
+          file: music/Backend/dockerfile
           push: true
-          tags: sumit001s/tunease-auth-service:latest
+          tags: sumit001s/tunease-music-service:latest

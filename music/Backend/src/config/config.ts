@@ -1,0 +1,44 @@
+import dotenv from "dotenv";
+dotenv.config();
+
+export interface MusicConfig {
+  MONGO_URI?: string;
+  IMAGEKIT_URL_ENDPOINT?: string;
+  IMAGEKIT_PUBLIC_KEY?: string;
+  IMAGEKIT_PRIVATE_KEY?: string;
+  AWS_REGION?: string;
+  AWS_ACCESS_KEY_ID?: string;
+  AWS_SECRET_ACCESS_KEY?: string;
+  JWT_ACCESS_TOKEN_SECRET_KEY?: string;
+  PORT: number | string;
+  SPOTIFY_ACCESS_TOKEN?: string;
+  NODE_ENV: string;
+  REDIS_URL?: string;
+  REDIS_HOST: string;
+  REDIS_PORT: number;
+  REDIS_PASSWORD: string | null;
+}
+
+const _config: MusicConfig = {
+  MONGO_URI: process.env.MONGO_URI,
+  IMAGEKIT_URL_ENDPOINT: process.env.IMAGEKIT_URL_ENDPOINT || process.env.IMAGE_KIT_URL_ENDPOINT,
+  IMAGEKIT_PUBLIC_KEY: process.env.IMAGEKIT_PUBLIC_KEY || process.env.IMAGE_KIT_PUBLIC_KEY,
+  IMAGEKIT_PRIVATE_KEY:
+    process.env.IMAGEKIT_PRIVATE_KEY ||
+    process.env.IMAGE_KIT_PRIVATEKEY ||
+    process.env.IMAGE_KIT_PRIVATE_KEY,
+  AWS_REGION: process.env.AWS_REGION,
+  AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+  AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+  JWT_ACCESS_TOKEN_SECRET_KEY: process.env.JWT_ACCESS_TOKEN_SECRET_KEY,
+  PORT: process.env.PORT || 3002,
+  SPOTIFY_ACCESS_TOKEN: process.env.SPOTIFY_ACCESS_TOKEN,
+  NODE_ENV: process.env.NODE_ENV || "development",
+  REDIS_URL: process.env.REDIS_URL,
+  REDIS_HOST: process.env.REDIS_HOST || "127.0.0.1",
+  REDIS_PORT: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT, 10) : 6379,
+  REDIS_PASSWORD: process.env.REDIS_PASSWORD || null,
+};
+
+export default Object.freeze(_config);
+module.exports = Object.freeze(_config);

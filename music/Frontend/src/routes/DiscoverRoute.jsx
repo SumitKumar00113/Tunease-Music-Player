@@ -51,23 +51,23 @@ export function DiscoverRoute() {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Flame className="w-5 h-5 text-[#1ED760]" />
-            <h2 className="text-xl font-bold text-[#F5F7F5] tracking-tight">Trending Now</h2>
+            <Flame className="w-5 h-5 text-[#60cfd8]" />
+            <h2 className="text-xl font-bold text-[#F5F5F5] tracking-tight">Trending Now</h2>
           </div>
           <button 
             onClick={() => {
               setActiveTab('explore');
               navigate('/explore');
             }}
-            className="text-xs font-semibold text-[#A0B0A5] hover:text-[#1ED760] transition-colors cursor-pointer"
+            className="text-xs font-semibold text-[#A1A1AA] hover:text-[#60cfd8] transition-colors cursor-pointer"
           >
             See all
           </button>
         </div>
 
         {filteredTracks.length === 0 ? (
-          <div className="p-8 text-center bg-[#12251A] rounded-2xl border border-[#24392B]">
-            <p className="text-sm text-[#A0B0A5]">No tracks found matching your search.</p>
+          <div className="p-8 text-center bg-[#141416] rounded-2xl border border-[#29292D]">
+            <p className="text-sm text-[#A1A1AA]">No tracks found matching your search.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -82,8 +82,8 @@ export function DiscoverRoute() {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-[#8BE9A7]" />
-            <h2 className="text-xl font-bold text-[#F5F7F5] tracking-tight">Fresh Releases</h2>
+            <Sparkles className="w-5 h-5 text-[#32aeb9]" />
+            <h2 className="text-xl font-bold text-[#F5F5F5] tracking-tight">Fresh Releases</h2>
           </div>
         </div>
         <TrackList tracks={filteredTracks.slice(0, 10)} />
@@ -92,7 +92,7 @@ export function DiscoverRoute() {
       {/* TOP ARTISTS SECTION */}
       {uniqueArtists.length > 0 && (
         <section className="space-y-4">
-          <h2 className="text-xl font-bold text-[#F5F7F5] tracking-tight">Featured Artists</h2>
+          <h2 className="text-xl font-bold text-[#F5F5F5] tracking-tight">Featured Artists</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
             {uniqueArtists.map((art) => (
               <div
@@ -102,18 +102,18 @@ export function DiscoverRoute() {
                   setActiveTab('artist');
                   navigate(`/artist/${art.id}`);
                 }}
-                className="group flex flex-col items-center p-4 bg-[#12251A] hover:bg-[#162e20] rounded-2xl border border-[#24392B] hover:border-[#1ED760]/40 transition-all cursor-pointer text-center shadow-md hover:shadow-xl hover:-translate-y-1"
+                className="group flex flex-col items-center p-4 bg-[#141416] hover:bg-[#20140F] rounded-2xl border border-[#29292D] hover:border-[#60cfd8]/40 transition-all cursor-pointer text-center shadow-md hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="relative w-24 h-24 mb-3 rounded-full overflow-hidden border-2 border-[#24392B] group-hover:border-[#1ED760] transition-colors shadow-lg bg-[#07110C]">
+                <div className="relative w-24 h-24 mb-3 rounded-full overflow-hidden border-2 border-[#29292D] group-hover:border-[#60cfd8] transition-colors shadow-lg bg-[#050505]">
                   <img src={art.avatar} alt={art.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <div className="flex items-center gap-1">
-                  <h3 className="font-semibold text-sm text-[#F5F7F5] group-hover:text-[#1ED760] transition-colors truncate max-w-[120px]">
+                  <h3 className="font-semibold text-sm text-[#F5F5F5] group-hover:text-[#60cfd8] transition-colors truncate max-w-[120px]">
                     {art.name}
                   </h3>
-                  {art.verified && <Verified className="w-3.5 h-3.5 text-[#1ED760] shrink-0" />}
+                  {art.verified && <Verified className="w-3.5 h-3.5 text-[#60cfd8] shrink-0" />}
                 </div>
-                <p className="text-[11px] text-[#A0B0A5] mt-0.5">
+                <p className="text-[11px] text-[#A1A1AA] mt-0.5">
                   Artist
                 </p>
               </div>

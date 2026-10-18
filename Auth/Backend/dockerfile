@@ -1,14 +1,20 @@
-    FROM node:22-alpine
+# Build from Auth/Backend: docker build -t tunease-auth .
+FROM node:22-alpine
 
-    WORKDIR /app 
+ENV NODE_ENV=production
+WORKDIR /app
 
+# Install only runtime dependencies, using the lockfile for reproducible builds.
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev && npm cache clean --force
 
-    COPY package*.json ./
+# .dockerignore excludes local dependencies, environment files, and generated files.
+COPY --chown=node:node . .
 
-    RUN npm install 
+USER node
 
-    COPY . . 
-
+# Override PORT at runtime if the service is configured to use another port.
 EXPOSE 3000
 
-    CMD ["node","server.js"]
+# Provide secrets and service URLs at runtime (for example with --env-file); do not bake .env into the image.
+CMD ["node", "server.js"]

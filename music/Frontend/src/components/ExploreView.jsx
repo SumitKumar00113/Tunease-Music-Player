@@ -31,17 +31,17 @@ export const ExploreView = () => {
       {/* PAGE HEADER */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#F5F7F5] font-['Space_Grotesk'] flex items-center gap-2.5">
-            <Compass className="w-7 h-7 text-[#1ED760]" />
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#F5F5F5] font-['Space_Grotesk'] flex items-center gap-2.5">
+            <Compass className="w-7 h-7 text-[#60cfd8]" />
             Explore Genres & Categories
           </h2>
-          <p className="text-xs text-[#A0B0A5]">Browse tracks by soundscape, mood, and musical tags</p>
+          <p className="text-xs text-[#A1A1AA]">Browse tracks by soundscape, mood, and musical tags</p>
         </div>
 
         {selectedGenre && (
           <button
             onClick={() => setSelectedGenre(null)}
-            className="text-xs px-3.5 py-1.5 rounded-full bg-[#12251A] hover:bg-[#162e20] text-[#1ED760] font-bold border border-[#24392B] hover:border-[#1ED760] transition-all cursor-pointer"
+            className="text-xs px-3.5 py-1.5 rounded-full bg-[#141416] hover:bg-[#20140F] text-[#60cfd8] font-bold border border-[#29292D] hover:border-[#60cfd8] transition-all cursor-pointer"
           >
             Clear Filter ({selectedGenre}) ✕
           </button>
@@ -56,10 +56,10 @@ export const ExploreView = () => {
             <div
               key={genre.id}
               onClick={() => setSelectedGenre(isSelected ? null : genre.name)}
-              className={`group relative h-36 rounded-2xl overflow-hidden bg-[#12251A] p-4 flex flex-col justify-between cursor-pointer border transition-all duration-300 shadow-md hover:scale-[1.02] ${
+              className={`group relative h-36 rounded-2xl overflow-hidden bg-[#141416] p-4 flex flex-col justify-between cursor-pointer border transition-all duration-300 shadow-md hover:scale-[1.02] ${
                 isSelected
-                  ? 'border-[#1ED760] ring-2 ring-[#1ED760]/40 shadow-lg shadow-[#1ED760]/20'
-                  : 'border-[#24392B] hover:border-[#1ED760]/50'
+                  ? 'border-[#60cfd8] ring-2 ring-[#60cfd8]/40 shadow-lg shadow-[#60cfd8]/20'
+                  : 'border-[#29292D] hover:border-[#60cfd8]/50'
               }`}
             >
               <img
@@ -67,13 +67,13 @@ export const ExploreView = () => {
                 alt={genre.name}
                 className="absolute inset-0 w-full h-full object-cover opacity-25 group-hover:scale-110 transition-transform duration-500"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#07110C] via-[#07110C]/50 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/50 to-transparent" />
 
-              <span className="relative z-10 text-[10px] font-bold text-[#8BE9A7] uppercase tracking-wider">
+              <span className="relative z-10 text-[10px] font-bold text-[#32aeb9] uppercase tracking-wider">
                 Genre
               </span>
               <h3 className={`relative z-10 font-extrabold text-sm transition-colors ${
-                isSelected ? 'text-[#1ED760]' : 'text-[#F5F7F5] group-hover:text-[#1ED760]'
+                isSelected ? 'text-[#60cfd8]' : 'text-[#F5F5F5] group-hover:text-[#60cfd8]'
               }`}>
                 {genre.name}
               </h3>
@@ -85,21 +85,21 @@ export const ExploreView = () => {
       {/* FEATURED CATEGORY TRACKS */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-[#F5F7F5] flex items-center gap-2">
-            <Flame className="w-5 h-5 text-[#1ED760]" />
+          <h3 className="text-lg font-bold text-[#F5F5F5] flex items-center gap-2">
+            <Flame className="w-5 h-5 text-[#60cfd8]" />
             {selectedGenre ? `${selectedGenre} Tracks` : 'Catalog Audio Tracks'}
           </h3>
-          <span className="text-xs text-[#A0B0A5] font-mono">
+          <span className="text-xs text-[#A1A1AA] font-mono">
             {filteredTracks.length} tracks
           </span>
         </div>
 
         {filteredTracks.length === 0 ? (
-          <div className="py-12 text-center text-[#A0B0A5] bg-[#12251A] rounded-2xl p-6 border border-[#24392B]">
+          <div className="py-12 text-center text-[#A1A1AA] bg-[#141416] rounded-2xl p-6 border border-[#29292D]">
             <p className="text-sm font-semibold">No tracks found for {selectedGenre || 'this query'}.</p>
             <button
               onClick={() => setSelectedGenre(null)}
-              className="mt-2 text-xs text-[#1ED760] hover:underline cursor-pointer"
+              className="mt-2 text-xs text-[#60cfd8] hover:underline cursor-pointer"
             >
               View all tracks
             </button>

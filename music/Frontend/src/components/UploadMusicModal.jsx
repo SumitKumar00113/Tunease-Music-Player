@@ -100,25 +100,25 @@ export const UploadMusicModal = () => {
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 animate-fadeIn">
       
-      <div className="relative w-full max-w-xl bg-[#0D1B13] rounded-3xl p-6 sm:p-8 border border-[#24392B] shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto no-scrollbar">
+      <div className="relative w-full max-w-xl bg-[#0C0C0E] rounded-3xl p-6 sm:p-8 border border-[#29292D] shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto no-scrollbar">
         
         {/* MODAL HEADER */}
-        <div className="flex items-center justify-between border-b border-[#24392B] pb-4">
+        <div className="flex items-center justify-between border-b border-[#29292D] pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#1ED760]/20 border border-[#1ED760]/40 flex items-center justify-center shadow-lg shadow-[#1ED760]/20">
-              <Upload className="w-5 h-5 text-[#1ED760]" />
+            <div className="w-10 h-10 rounded-2xl bg-[#60cfd8]/20 border border-[#60cfd8]/40 flex items-center justify-center shadow-lg shadow-[#60cfd8]/20">
+              <Upload className="w-5 h-5 text-[#60cfd8]" />
             </div>
             <div>
-              <h3 className="text-lg font-extrabold text-[#F5F7F5] font-['Space_Grotesk']">
+              <h3 className="text-lg font-extrabold text-[#F5F5F5] font-['Space_Grotesk']">
                 Upload & Release Music
               </h3>
-              <p className="text-xs text-[#A0B0A5]">Distribute your track across the Tunease network</p>
+              <p className="text-xs text-[#A1A1AA]">Distribute your track across the Tunease network</p>
             </div>
           </div>
 
           <button
             onClick={() => setIsUploadModalOpen(false)}
-            className="p-2 rounded-full bg-[#12251A] text-[#A0B0A5] hover:text-[#F5F7F5] hover:bg-[#1A3324] transition-colors"
+            className="p-2 rounded-full bg-[#141416] text-[#A1A1AA] hover:text-[#F5F5F5] hover:bg-[#26262B] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -126,8 +126,8 @@ export const UploadMusicModal = () => {
 
         {/* FEEDBACK NOTICES */}
         {successMessage && (
-          <div className="p-4 rounded-2xl bg-[#1ED760]/15 border border-[#1ED760]/30 text-[#8BE9A7] text-xs flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-[#1ED760]" />
+          <div className="p-4 rounded-2xl bg-[#60cfd8]/15 border border-[#60cfd8]/30 text-[#32aeb9] text-xs flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-[#60cfd8]" />
             <span>{successMessage}</span>
           </div>
         )}
@@ -147,7 +147,7 @@ export const UploadMusicModal = () => {
                     setIsUploadModalOpen(false);
                     setIsAuthModalOpen(true);
                   }}
-                  className="px-3 py-1 bg-[#1ED760] hover:bg-[#1fdf64] text-black rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-[#1ED760]/25"
+                  className="px-3 py-1 bg-[#60cfd8] hover:bg-[#4ebcc7] text-black rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-[#60cfd8]/25"
                 >
                   <LogIn className="w-3 h-3" />
                   <span>Sign In as Artist</span>
@@ -162,48 +162,48 @@ export const UploadMusicModal = () => {
           
           {/* TRACK TITLE */}
           <div className="space-y-1">
-            <label className="text-[#A0B0A5] font-bold">Track Title *</label>
+            <label className="text-[#A1A1AA] font-bold">Track Title *</label>
             <input
               type="text"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Cyberpunk Overdrive"
-              className="w-full bg-[#12251A] text-[#F5F7F5] p-3 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none"
+              className="w-full bg-[#141416] text-[#F5F5F5] p-3 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none"
             />
           </div>
 
           {/* ARTIST & ALBUM ROW */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-[#A0B0A5] font-bold">Artist / Creator Name</label>
+              <label className="text-[#A1A1AA] font-bold">Artist / Creator Name</label>
               <input
                 type="text"
                 value={artistName}
                 onChange={(e) => setArtistName(e.target.value)}
                 placeholder="e.g. Tunease Studio"
-                className="w-full bg-[#12251A] text-[#F5F7F5] p-3 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none"
+                className="w-full bg-[#141416] text-[#F5F5F5] p-3 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[#A0B0A5] font-bold">Album or EP Name</label>
+              <label className="text-[#A1A1AA] font-bold">Album or EP Name</label>
               <input
                 type="text"
                 value={album}
                 onChange={(e) => setAlbum(e.target.value)}
                 placeholder="e.g. Synthetic Dreams (Single)"
-                className="w-full bg-[#12251A] text-[#F5F7F5] p-3 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none"
+                className="w-full bg-[#141416] text-[#F5F5F5] p-3 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none"
               />
             </div>
           </div>
 
           {/* GENRE */}
           <div className="space-y-1">
-            <label className="text-[#A0B0A5] font-bold">Primary Genre</label>
+            <label className="text-[#A1A1AA] font-bold">Primary Genre</label>
             <select
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
-              className="w-full bg-[#12251A] text-[#F5F7F5] p-3 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none"
+              className="w-full bg-[#141416] text-[#F5F5F5] p-3 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none"
             >
               <option value="Electronic">Electronic / Synthwave</option>
               <option value="Hip-Hop">Hip-Hop / Urban</option>
@@ -216,13 +216,13 @@ export const UploadMusicModal = () => {
 
           {/* DESCRIPTION */}
           <div className="space-y-1">
-            <label className="text-[#A0B0A5] font-bold">Liner Notes / Description</label>
+            <label className="text-[#A1A1AA] font-bold">Liner Notes / Description</label>
             <textarea
               rows={2}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Tell listeners the story behind this release..."
-              className="w-full bg-[#12251A] text-[#F5F7F5] p-3 rounded-xl border border-[#24392B] focus:border-[#1ED760] focus:outline-none resize-none"
+              className="w-full bg-[#141416] text-[#F5F5F5] p-3 rounded-xl border border-[#29292D] focus:border-[#60cfd8] focus:outline-none resize-none"
             />
           </div>
 
@@ -231,16 +231,16 @@ export const UploadMusicModal = () => {
             
             {/* AUDIO FILE */}
             <div className="space-y-1">
-              <label className="text-[#A0B0A5] font-bold flex items-center gap-1.5">
-                <Music className="w-3.5 h-3.5 text-[#1ED760]" />
+              <label className="text-[#A1A1AA] font-bold flex items-center gap-1.5">
+                <Music className="w-3.5 h-3.5 text-[#60cfd8]" />
                 Audio Master File *
               </label>
-              <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-[#24392B] hover:border-[#1ED760] bg-[#12251A] cursor-pointer transition-colors text-center">
-                <Upload className="w-5 h-5 text-[#A0B0A5] mb-1" />
-                <span className="text-[11px] text-[#F5F7F5] truncate max-w-[180px]">
+              <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-[#29292D] hover:border-[#60cfd8] bg-[#141416] cursor-pointer transition-colors text-center">
+                <Upload className="w-5 h-5 text-[#A1A1AA] mb-1" />
+                <span className="text-[11px] text-[#F5F5F5] truncate max-w-[180px]">
                   {audioFile ? audioFile.name : 'Select MP3, WAV, FLAC'}
                 </span>
-                <span className="text-[9px] text-[#A0B0A5] mt-0.5">High-res audio up to 50MB</span>
+                <span className="text-[9px] text-[#A1A1AA] mt-0.5">High-res audio up to 50MB</span>
                 <input
                   type="file"
                   accept="audio/*"
@@ -253,16 +253,16 @@ export const UploadMusicModal = () => {
 
             {/* COVER ART */}
             <div className="space-y-1">
-              <label className="text-[#A0B0A5] font-bold flex items-center gap-1.5">
-                <ImageIcon className="w-3.5 h-3.5 text-[#8BE9A7]" />
+              <label className="text-[#A1A1AA] font-bold flex items-center gap-1.5">
+                <ImageIcon className="w-3.5 h-3.5 text-[#32aeb9]" />
                 Artwork Cover Image *
               </label>
-              <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-[#24392B] hover:border-[#1ED760] bg-[#12251A] cursor-pointer transition-colors text-center">
-                <ImageIcon className="w-5 h-5 text-[#A0B0A5] mb-1" />
-                <span className="text-[11px] text-[#F5F7F5] truncate max-w-[180px]">
+              <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-[#29292D] hover:border-[#60cfd8] bg-[#141416] cursor-pointer transition-colors text-center">
+                <ImageIcon className="w-5 h-5 text-[#A1A1AA] mb-1" />
+                <span className="text-[11px] text-[#F5F5F5] truncate max-w-[180px]">
                   {coverFile ? coverFile.name : 'Select PNG, JPG, WebP'}
                 </span>
-                <span className="text-[9px] text-[#A0B0A5] mt-0.5">Square 1:1 ratio recommended</span>
+                <span className="text-[9px] text-[#A1A1AA] mt-0.5">Square 1:1 ratio recommended</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -282,9 +282,9 @@ export const UploadMusicModal = () => {
               id="explicitCheck"
               checked={isExplicit}
               onChange={(e) => setIsExplicit(e.target.checked)}
-              className="w-4 h-4 accent-[#1ED760] rounded"
+              className="w-4 h-4 accent-[#60cfd8] rounded"
             />
-            <label htmlFor="explicitCheck" className="text-[#A0B0A5] cursor-pointer hover:text-[#F5F7F5]">
+            <label htmlFor="explicitCheck" className="text-[#A1A1AA] cursor-pointer hover:text-[#F5F5F5]">
               Mark this release as explicit content
             </label>
           </div>
@@ -293,7 +293,7 @@ export const UploadMusicModal = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3.5 rounded-2xl bg-[#1ED760] hover:bg-[#1fdf64] text-black font-extrabold text-sm shadow-xl shadow-[#1ED760]/30 hover:scale-[1.01] transition-all disabled:opacity-50"
+            className="w-full py-3.5 rounded-2xl bg-[#60cfd8] hover:bg-[#4ebcc7] text-black font-extrabold text-sm shadow-xl shadow-[#60cfd8]/30 hover:scale-[1.01] transition-all disabled:opacity-50"
           >
             {isSubmitting ? 'Uploading to Microservice...' : 'Publish Track to Tunease'}
           </button>

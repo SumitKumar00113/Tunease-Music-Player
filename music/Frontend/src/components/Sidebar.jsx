@@ -36,27 +36,27 @@ export const Sidebar = () => {
   };
 
   return (
-    <aside className="app-sidebar w-60 sm:w-64 flex-shrink-0 flex flex-col h-full bg-[#0D1B13] border-r border-[#24392B] p-4 select-none justify-between z-20">
+    <aside className="app-sidebar w-60 sm:w-64 flex-shrink-0 flex flex-col h-full bg-[#0C0C0E] border-r border-[#29292D] p-4 select-none justify-between z-20">
       
       {/* BRAND & HEADER */}
       <div className="space-y-6">
         <div className="flex items-center gap-3 px-2 py-1">
-          <div className="relative w-9 h-9 rounded-xl bg-[#1ED760] flex items-center justify-center shadow-lg shadow-[#1ED760]/25 group">
-            <Music className="w-5 h-5 text-[#07110C]" />
+          <div className="relative w-9 h-9 rounded-xl bg-[#60cfd8] flex items-center justify-center shadow-lg shadow-[#60cfd8]/25 group">
+            <Music className="w-5 h-5 text-[#050505]" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-xl tracking-tight text-[#F5F7F5] font-['Space_Grotesk']">
-                TUNE<span className="text-[#1ED760]">ASE</span>
+              <span className="font-extrabold text-xl tracking-tight text-[#F5F5F5] font-['Space_Grotesk']">
+                TUNE<span className="text-[#60cfd8]">ASE</span>
               </span>
             </div>
-            <p className="text-[11px] text-[#A0B0A5] font-medium">Music Streaming</p>
+            <p className="text-[11px] text-[#A1A1AA] font-medium">Music Streaming</p>
           </div>
         </div>
 
         {/* MAIN NAVIGATION */}
         <nav className="space-y-1">
-          <p className="px-3 text-[10px] font-bold text-[#A0B0A5]/70 uppercase tracking-widest mb-2">
+          <p className="px-3 text-[10px] font-bold text-[#A1A1AA]/70 uppercase tracking-widest mb-2">
             Menu
           </p>
 
@@ -64,8 +64,8 @@ export const Sidebar = () => {
             onClick={() => handleNav('home')}
             className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer ${
               activeTab === 'home' || activeTab === 'discover'
-                ? 'bg-[#12251A] text-[#1ED760] border border-[#24392B] shadow-sm'
-                : 'text-[#A0B0A5] hover:text-[#F5F7F5] hover:bg-[#12251A]/60'
+                ? 'bg-[#141416] text-[#60cfd8] border border-[#29292D] shadow-sm'
+                : 'text-[#A1A1AA] hover:text-[#F5F5F5] hover:bg-[#141416]/60'
             }`}
           >
             <Home className="w-4 h-4" />
@@ -76,8 +76,8 @@ export const Sidebar = () => {
             onClick={() => handleNav('explore')}
             className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer ${
               activeTab === 'explore'
-                ? 'bg-[#12251A] text-[#1ED760] border border-[#24392B] shadow-sm'
-                : 'text-[#A0B0A5] hover:text-[#F5F7F5] hover:bg-[#12251A]/60'
+                ? 'bg-[#141416] text-[#60cfd8] border border-[#29292D] shadow-sm'
+                : 'text-[#A1A1AA] hover:text-[#F5F5F5] hover:bg-[#141416]/60'
             }`}
           >
             <Compass className="w-4 h-4" />
@@ -88,8 +88,8 @@ export const Sidebar = () => {
             onClick={() => handleNav('library')}
             className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer ${
               activeTab === 'library'
-                ? 'bg-[#12251A] text-[#1ED760] border border-[#24392B] shadow-sm'
-                : 'text-[#A0B0A5] hover:text-[#F5F7F5] hover:bg-[#12251A]/60'
+                ? 'bg-[#141416] text-[#60cfd8] border border-[#29292D] shadow-sm'
+                : 'text-[#A1A1AA] hover:text-[#F5F5F5] hover:bg-[#141416]/60'
             }`}
           >
             <Library className="w-4 h-4" />
@@ -98,14 +98,14 @@ export const Sidebar = () => {
         </nav>
 
         {/* PLAYLISTS & SAVED MUSIC */}
-        <div className="space-y-1 pt-2 border-t border-[#24392B]">
+        <div className="space-y-1 pt-2 border-t border-[#29292D]">
           <div className="flex items-center justify-between px-3 mb-2">
-            <p className="text-[10px] font-bold text-[#A0B0A5]/70 uppercase tracking-widest">
+            <p className="text-[10px] font-bold text-[#A1A1AA]/70 uppercase tracking-widest">
               Playlists & Favorites
             </p>
             <button
               onClick={() => setIsCreatePlaylistModalOpen(true)}
-              className="p-1 rounded-md text-[#A0B0A5] hover:text-[#1ED760] hover:bg-[#12251A] transition-colors cursor-pointer"
+              className="p-1 rounded-md text-[#A1A1AA] hover:text-[#60cfd8] hover:bg-[#141416] transition-colors cursor-pointer"
               title="Create Playlist"
             >
               <Plus className="w-4 h-4" />
@@ -116,17 +116,17 @@ export const Sidebar = () => {
             onClick={() => handleNav('liked')}
             className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer ${
               activeTab === 'liked'
-                ? 'bg-[#12251A] text-[#1ED760] border border-[#24392B] shadow-sm'
-                : 'text-[#A0B0A5] hover:text-[#F5F7F5] hover:bg-[#12251A]/60'
+                ? 'bg-[#141416] text-[#60cfd8] border border-[#29292D] shadow-sm'
+                : 'text-[#A1A1AA] hover:text-[#F5F5F5] hover:bg-[#141416]/60'
             }`}
           >
             <div className="flex items-center gap-3">
-              <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-[#1ED760] to-[#8BE9A7] flex items-center justify-center shadow-sm">
-                <Heart className="w-3.5 h-3.5 text-[#07110C] fill-[#07110C]" />
+              <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-[#60cfd8] to-[#32aeb9] flex items-center justify-center shadow-sm">
+                <Heart className="w-3.5 h-3.5 text-[#050505] fill-[#050505]" />
               </div>
               <span>Liked Songs</span>
             </div>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-[#12251A] text-[#8BE9A7] font-mono border border-[#24392B]">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-[#141416] text-[#32aeb9] font-mono border border-[#29292D]">
               {likedTrackIds.size}
             </span>
           </button>
@@ -134,7 +134,7 @@ export const Sidebar = () => {
           {/* USER'S REAL PLAYLISTS LIST */}
           <div className="mt-2 space-y-0.5 max-h-48 overflow-y-auto no-scrollbar">
             {playlists.length === 0 ? (
-              <p className="text-[11px] text-[#A0B0A5]/60 px-3 py-1.5 italic">No playlists created yet</p>
+              <p className="text-[11px] text-[#A1A1AA]/60 px-3 py-1.5 italic">No playlists created yet</p>
             ) : (
               playlists.map((pl) => (
                 <button
@@ -144,9 +144,9 @@ export const Sidebar = () => {
                     setActiveTab('playlist');
                     navigate(`/playlist/${pl._id || pl.id}`);
                   }}
-                  className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-lg text-xs font-medium text-[#A0B0A5] hover:text-[#F5F7F5] hover:bg-[#12251A] truncate transition-all text-left cursor-pointer"
+                  className="w-full flex items-center gap-2.5 px-3.5 py-2 rounded-lg text-xs font-medium text-[#A1A1AA] hover:text-[#F5F5F5] hover:bg-[#141416] truncate transition-all text-left cursor-pointer"
                 >
-                  <ListMusic className="w-3.5 h-3.5 text-[#8BE9A7] flex-shrink-0" />
+                  <ListMusic className="w-3.5 h-3.5 text-[#32aeb9] flex-shrink-0" />
                   <span className="truncate">{pl.name || pl.playListName}</span>
                 </button>
               ))
@@ -156,24 +156,24 @@ export const Sidebar = () => {
       </div>
 
       {/* FOOTER ACTIONS */}
-      {user?.role === 'artist' && <div className="space-y-2 pt-3 border-t border-[#24392B]">
+      {user?.role === 'artist' && <div className="space-y-2 pt-3 border-t border-[#29292D]">
         {/* MANAGE UPLOADS (DIRECT TRACK MANAGER) */}
         <button
           onClick={() => handleNav('dashboard')}
           className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
             activeTab === 'dashboard'
-              ? 'bg-[#12251A] text-[#1ED760] border border-[#24392B]'
-              : 'text-[#A0B0A5] hover:text-[#F5F7F5] hover:bg-[#12251A]/60'
+              ? 'bg-[#141416] text-[#60cfd8] border border-[#29292D]'
+              : 'text-[#A1A1AA] hover:text-[#F5F5F5] hover:bg-[#141416]/60'
           }`}
         >
-          <FolderKanban className="w-4 h-4 text-[#8BE9A7]" />
+          <FolderKanban className="w-4 h-4 text-[#32aeb9]" />
           <span>Manage Uploads</span>
         </button>
 
         {/* UPLOAD TRACK ACTION BUTTON */}
         <button
           onClick={() => setIsUploadModalOpen(true)}
-          className="w-full p-2.5 rounded-xl bg-[#1ED760] hover:bg-[#1fdf65] active:bg-[#1ab852] text-[#07110C] font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#1ED760]/20 hover:scale-[1.02] transition-all cursor-pointer"
+          className="w-full p-2.5 rounded-xl bg-[#60cfd8] hover:bg-[#4ebcc7] active:bg-[#4ebcc7] text-[#050505] font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#60cfd8]/20 hover:scale-[1.02] transition-all cursor-pointer"
         >
           <Upload className="w-4 h-4 stroke-[2.5]" />
           <span>Upload Music</span>
