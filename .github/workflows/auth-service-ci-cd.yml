@@ -1,0 +1,69 @@
+
+name: Tunease Auth Service CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "Auth/Backend/**"
+      - ".github/workflows/auth-service-ci-cd.yml"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "Auth/Backend/**"
+      - ".github/workflows/auth-service-ci-cd.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test Auth Service
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: Auth/Backend
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Auth/Backend/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Tests
+        run: npm test --if-present
+
+  docker:
+    name: Build and Push Docker Image
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: Auth/Backend
+          push: true
+          tags: sumit001s/tunease-auth-service:latest
