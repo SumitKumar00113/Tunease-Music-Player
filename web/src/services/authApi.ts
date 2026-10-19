@@ -1,7 +1,7 @@
 import { User, AuthResponse } from '../types';
 
 export const AUTH_BASE_URL =
-  process.env.NEXT_PUBLIC_AUTH_API_URL || 'http://localhost:3000/api/auth';
+  process.env.NEXT_PUBLIC_AUTH_API_URL || 'https://tunease-auth-service-latest.onrender.com/api/auth';
 
 export function getAuthHeaders(): Record<string, string> {
   if (typeof window === 'undefined') return {};

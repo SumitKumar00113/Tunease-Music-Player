@@ -2,7 +2,7 @@ import { Track, Playlist, SpotifyTrack } from '../types';
 import { getAuthHeaders } from './authApi';
 
 export const MUSIC_BASE_URL =
-  process.env.NEXT_PUBLIC_MUSIC_API_URL || 'http://localhost:3002/api/music';
+  process.env.NEXT_PUBLIC_MUSIC_API_URL || 'https://tunease-music-service-latest.onrender.com/api/music';
 
 interface BackendMusicItem {
   _id?: string;

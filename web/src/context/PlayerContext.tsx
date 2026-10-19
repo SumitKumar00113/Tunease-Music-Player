@@ -91,7 +91,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   // Initialize Socket.io connection for realtime sync
   useEffect(() => {
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3002';
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'https://tunease-music-service-latest.onrender.com';
     try {
       const socket = io(socketUrl, {
         withCredentials: true,
