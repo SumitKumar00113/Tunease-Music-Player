@@ -18,10 +18,10 @@ import {
   AlertCircle 
 } from 'lucide-react';
 
-export const UserProfile = ({ user, onLogout, onUpdateUser }) => {
-  const landingUrl = import.meta.env.VITE_LANDING_URL || 'http://localhost:5173';
-  const musicUrl = import.meta.env.VITE_MUSIC_APP_URL || 'http://localhost:5174';
-  const apiBaseUrl = import.meta.env.VITE_AUTH_API_URL || 'http://localhost:3000/api/auth';
+export const UserProfile = ({ user, authToken, onLogout, onUpdateUser }) => {
+  const landingUrl = import.meta.env.VITE_LANDING_URL || 'http://localhost:3000';
+  const musicUrl = `${(import.meta.env.VITE_MUSIC_APP_URL || 'https://tunease-music-service-latest.onrender.com').replace(/\/$/, '')}/user_dashboard${authToken ? `#access_token=${encodeURIComponent(authToken)}` : ''}`;
+  const apiBaseUrl = import.meta.env.VITE_AUTH_API_URL || 'https://tunease-auth-service-latest.onrender.com/api/auth';
 
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);

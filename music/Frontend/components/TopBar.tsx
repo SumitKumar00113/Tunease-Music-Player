@@ -1,12 +1,11 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Search, UserRound } from "lucide-react";
 
 export default function TopBar() {
   const router = useRouter();
-  const path = usePathname();
   const [query, setQuery] = useState("");
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

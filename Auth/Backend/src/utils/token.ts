@@ -13,7 +13,8 @@ export interface ITokenUser {
 
 export const generateAccessToken = (user: ITokenUser, sessionId?: string): string => {
   const userId = user._id ? user._id.toString() : (user.id || "");
-  const secret: Secret = _config.JWT_ACCESS_SECRET || _config.JWT_ACCESS_TOKEN_SECRET_KEY || "default_access_secret";
+  // Keep signing aligned with accessTokenValidate and the music service.
+  const secret: Secret = _config.JWT_ACCESS_TOKEN_SECRET_KEY || _config.JWT_ACCESS_SECRET || "default_access_secret";
 
   return jwt.sign(
     {
@@ -25,7 +26,7 @@ export const generateAccessToken = (user: ITokenUser, sessionId?: string): strin
       sessionId,
     },
     secret,
-    { expiresIn: "15m" }
+    { expiresIn: "24h" }
   );
 };
 
@@ -39,7 +40,7 @@ export const generateRefreshToken = (user: ITokenUser, sessionId?: string): stri
       sessionId,
     },
     secret,
-    { expiresIn: "7d" }
+    { expiresIn: "24h" }
   );
 };
 

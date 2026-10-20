@@ -2,11 +2,14 @@
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import dynamic from "next/dynamic";
 import Sidebar from "./Sidebar";
-import RightPanel from "./RightPanel";
 import PlayerBar from "./PlayerBar";
 import TopBar from "./TopBar";
 import MobileNav from "./MobileNav";
+import RateLimitToast from "./RateLimitToast";
+
+const RightPanel = dynamic(() => import("./RightPanel"), { loading: () => <aside aria-hidden="true" className="hidden border-l border-line bg-surface xl:block" /> });
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const isStudio = usePathname().startsWith("/studio");
@@ -22,6 +25,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </div>
       {!isStudio && <MobileNav />}
       <div className="persistent-player"><PlayerBar /></div>
+      <RateLimitToast />
     </div>
   );
 }

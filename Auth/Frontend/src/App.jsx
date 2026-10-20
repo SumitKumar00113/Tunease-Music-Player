@@ -5,10 +5,11 @@ import { ArrowLeft } from 'lucide-react';
 import { AppRoutes } from './routes';
 
 const API_BASE_URL = import.meta.env.VITE_AUTH_API_URL || 'https://tunease-auth-service-latest.onrender.com/api/auth';
-const LANDING_URL = import.meta.env.VITE_LANDING_URL || 'http://localhost:5173';
+const LANDING_URL = import.meta.env.VITE_LANDING_URL || 'https://tunease-music-service-latest.onrender.com';
 
 export function App() {
   const [user, setUser] = useState(null);
+  const [authToken, setAuthToken] = useState(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   // Check user session on mount
@@ -22,6 +23,11 @@ export function App() {
           const data = await res.json();
           if (data.user) {
             setUser(data.user);
+            const tokenRes = await fetch(`${API_BASE_URL}/session-token`, { credentials: 'include' });
+            if (tokenRes.ok) {
+              const tokenData = await tokenRes.json();
+              setAuthToken(tokenData.accessToken || null);
+            }
           }
         }
       } catch (err) {
@@ -44,6 +50,7 @@ export function App() {
       console.error(err);
     } finally {
       setUser(null);
+      setAuthToken(null);
     }
   };
 
@@ -76,8 +83,9 @@ export function App() {
             <AppRoutes
               apiBaseUrl={API_BASE_URL}
               user={user}
+              authToken={authToken}
               checkingAuth={checkingAuth}
-              onLoginSuccess={(loggedUser) => setUser(loggedUser)}
+              onLoginSuccess={(loggedUser, token) => { setUser(loggedUser); setAuthToken(token || null); }}
               onLogout={handleLogout}
               onUpdateUser={(updatedUser) => setUser(updatedUser)}
             />

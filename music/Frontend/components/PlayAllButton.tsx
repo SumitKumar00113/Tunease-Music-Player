@@ -10,7 +10,7 @@ export default function PlayAllButton({ tracks }: { tracks: Track[] }) {
     <button
       aria-label="Play playlist"
       onClick={() => tracks[0] && play(tracks[0], tracks)}
-      className="grid size-14 place-items-center rounded-full bg-brand text-white shadow-lg shadow-accent/20 transition-transform hover:scale-105"
+      className="grid size-14 place-items-center rounded-full bg-brand text-bg shadow-lg shadow-accent/20 transition-transform hover:scale-105 active:scale-[.98]"
     >
       <Play size={24} className="translate-x-0.5" />
     </button>

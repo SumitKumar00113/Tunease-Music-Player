@@ -11,7 +11,12 @@ import { AuthModal } from './components/AuthModal';
 import { AppRoutes } from './routes';
 import { io } from "socket.io-client";
 const AUTH_URL = import.meta.env.VITE_AUTH_URL || 'https://tunease-auth-service-latest.onrender.com';
-const LOGIN_URL = import.meta.env.VITE_AUTH_LOGIN_URL || `${AUTH_URL}/login`;
+const MUSIC_APP_URL = import.meta.env.VITE_MUSIC_APP_URL || 'https://tunease-music-service-latest.onrender.com';
+const LOGIN_URL = (() => {
+  const loginUrl = new URL(import.meta.env.VITE_AUTH_LOGIN_URL || `${AUTH_URL}/login`);
+  loginUrl.searchParams.set('returnTo', `${MUSIC_APP_URL.replace(/\/$/, '')}/user_dashboard`);
+  return loginUrl.toString();
+})();
 
 const MainContent = () => {
   const { queue, playTrack, socketRef } = usePlayer();
@@ -19,7 +24,7 @@ const MainContent = () => {
   useEffect(() => {
     let socket;
     try {
-      const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3002";
+      const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://tunease-music-service-latest.onrender.com";
       socket = io(SOCKET_URL, {
         withCredentials: true,
         reconnectionAttempts: 3,

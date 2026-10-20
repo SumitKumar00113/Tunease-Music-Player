@@ -38,6 +38,8 @@
   "exclude": [
     "node_modules",
     "src",
+    "dist",
+    ".next/dev",
     "vite.config.js"
   ]
 }

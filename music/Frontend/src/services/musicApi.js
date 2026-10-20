@@ -2,13 +2,13 @@
  * Tunease Music API Integration Layer
  * 
  * Connected to live backend microservices:
- * - Auth Backend: http://localhost:3000/api/auth
- * - Music Backend: http://localhost:3002/api/music
+ * - Auth Backend: https://tunease-auth-service-latest.onrender.com/api/auth
+ * - Music Backend: https://tunease-music-service-latest.onrender.com/api/music
  */
 
 import axios from 'axios';
 
-export const API_BASE_URL = import.meta.env.VITE_MUSIC_API_URL || 'http://localhost:3002'; // Music Backend Port
+export const API_BASE_URL = import.meta.env.VITE_MUSIC_API_URL || 'https://tunease-music-service-latest.onrender.com';
 export const AUTH_BASE_URL = import.meta.env.VITE_AUTH_API_URL || 'https://tunease-auth-service-latest.onrender.com/api/auth';
 export const USE_BACKEND_API = true; // Enabled live backend integration
 
@@ -59,6 +59,11 @@ export const musicApi = {
 
   async getMe() {
     try {
+      const handoffToken = new URLSearchParams(window.location.hash.slice(1)).get('access_token');
+      if (handoffToken) {
+        localStorage.setItem('accessToken', handoffToken);
+        window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+      }
       const response = await fetch(`${AUTH_BASE_URL}/me`, {
         credentials: 'include',
         headers: {

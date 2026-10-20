@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Heart, MoreHorizontal, Shuffle } from "lucide-react";
 import Cover from "./Cover";
 import PlayAllButton from "./PlayAllButton";
@@ -11,16 +12,16 @@ import { usePlayer } from "@/store/player";
 import type { Playlist } from "@/lib/types";
 
 export default function PlaylistDetail({ id }: { id: string }) {
-  const [playlist, setPlaylist] = useState<Playlist | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState<{ id: string; playlist: Playlist | null; error: boolean } | null>(null);
+  const playlist = loaded?.id === id ? loaded.playlist : null;
+  const loading = loaded?.id !== id;
   const [liked, setLiked] = useState(false);
   const play = usePlayer((state) => state.play);
-  const [error, setError] = useState(false);
+  const error = loaded?.id === id && loaded.error;
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
-    getPlaylist(id).then((result) => { if (active) setPlaylist(result); }).catch(() => { if (active) setError(true); }).finally(() => { if (active) setLoading(false); });
+    getPlaylist(id).then((result) => { if (active) setLoaded({ id, playlist: result, error: false }); }).catch(() => { if (active) setLoaded({ id, playlist: null, error: true }); });
     return () => { active = false; };
   }, [id]);
 
@@ -34,10 +35,10 @@ export default function PlaylistDetail({ id }: { id: string }) {
 
   return (
     <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-7">
-      <header style={playlistArtStyle} className="playlist-header-gradient flex flex-col items-start gap-5 rounded-2xl p-5 sm:flex-row sm:items-end sm:gap-7 md:p-7">
-        <Cover id={playlist.id} coverUrl={playlist.coverUrl} className="w-40 shrink-0 rounded-xl shadow-2xl shadow-bg/60 md:w-[220px]" />
+      <motion.header initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.24 }} style={playlistArtStyle} className="playlist-header-gradient flex min-h-[220px] flex-col items-start gap-5 rounded-2xl p-5 sm:flex-row sm:items-end sm:gap-7 md:p-7">
+        <Cover id={playlist.id} coverUrl={playlist.coverUrl} layoutId={`playlist-cover-${playlist.id}`} priority className="w-40 shrink-0 rounded-xl shadow-2xl shadow-bg/60 md:w-[220px]" />
         <div className="min-w-0 pb-1"><span className="text-xs font-semibold uppercase tracking-widest text-muted">Playlist</span><h1 className="mt-2 break-words font-display text-3xl font-bold tracking-tight md:text-5xl">{playlist.name}</h1><p className="mt-3 text-sm text-muted">{playlist.owner} · {playlist.tracks.length} songs · {durationLabel}</p></div>
-      </header>
+      </motion.header>
 
       <div className="flex items-center gap-3">
         <PlayAllButton tracks={playlist.tracks} />
@@ -46,7 +47,7 @@ export default function PlaylistDetail({ id }: { id: string }) {
         <button aria-label="More playlist actions" className="grid size-12 place-items-center rounded-full border border-line bg-surface text-muted transition hover:border-accent hover:text-foreground"><MoreHorizontal size={19}/></button>
       </div>
 
-      <div className="flex flex-col">
+      <div role="table" aria-label={`${playlist.name} tracks`} className="flex flex-col">
         <div className="grid grid-cols-[28px_minmax(0,1fr)_60px] items-center gap-3 border-b border-line px-2 pb-2 text-[10px] font-semibold tracking-[0.16em] text-muted sm:grid-cols-[28px_minmax(0,3fr)_2fr_64px] sm:gap-4 sm:px-3">
           <span>#</span><span>TITLE</span><span className="hidden sm:block">ALBUM</span><span className="text-right">TIME</span>
         </div>

@@ -3,9 +3,9 @@ import { Redis } from "ioredis";
 
 // Expiry constants in seconds
 export const EXPIRATION = {
-  USER_SESSION: 7 * 24 * 60 * 60, // 7 days (604800s)
+  USER_SESSION: 24 * 60 * 60, // 24 hours
   USER_PROFILE: 60 * 60, // 1 hour (3600s)
-  BLACKLIST_TOKEN: 15 * 60, // 15 minutes (900s)
+  BLACKLIST_TOKEN: 24 * 60 * 60, // 24 hours
 } as const;
 
 export interface ICacheService {

@@ -7,9 +7,9 @@ describe("media upload validation", () => {
     });
 
     it("enforces lower server-side size limits", () => {
-        expect(AUDIO_LIMIT).toBe(20 * 1024 * 1024);
+        expect(AUDIO_LIMIT).toBe(50 * 1024 * 1024);
         expect(COVER_LIMIT).toBe(5 * 1024 * 1024);
-        expect(validateMediaFile({ originalname: "song.mp3", mimetype: "audio/mpeg", buffer: Buffer.from("ID3abc"), size: AUDIO_LIMIT + 1 }, "audio")).toMatch(/20 MiB/);
+        expect(validateMediaFile({ originalname: "song.mp3", mimetype: "audio/mpeg", buffer: Buffer.from("ID3abc"), size: AUDIO_LIMIT + 1 }, "audio")).toMatch(/50 MiB/);
         expect(validateMediaFile({ originalname: "cover.png", mimetype: "image/png", buffer: Buffer.from([137,80,78,71,13,10,26,10]), size: COVER_LIMIT + 1 }, "cover")).toMatch(/5 MiB/);
     });
 

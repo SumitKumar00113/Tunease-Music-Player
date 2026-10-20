@@ -28,20 +28,14 @@ interface UpdateProfilePayload {
 
 export const setAuthCookies = (res: Response, accessToken: string, refreshToken: string): void => {
   const isProduction = _config.NODE_ENV === "production";
-
-  res.cookie("accessToken", accessToken, {
+  const cookieOptions = {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? "strict" : "lax",
-    maxAge: 15 * 60 * 1000, // 15 minutes
-  });
-
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "strict" : "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  });
+    sameSite: isProduction ? ("none" as const) : ("lax" as const),
+    maxAge: 24 * 60 * 60 * 1000,
+  };
+  res.cookie("accessToken", accessToken, cookieOptions);
+  res.cookie("refreshToken", refreshToken, cookieOptions);
 };
 
 export const registerUser = async (req: Request, res: Response): Promise<Response> => {
@@ -81,7 +75,7 @@ export const registerUser = async (req: Request, res: Response): Promise<Respons
     const accessToken = generateAccessToken(user, sessionId);
     const refreshToken = generateRefreshToken(user, sessionId);
 
-    // Store session in Redis with 7-day TTL
+    // Store the session in Redis for 24 hours.
     const refreshTokenHash = await bcrypt.hash(refreshToken, 12);
     const sessionData: SessionData = {
       userId: user._id.toString(),
@@ -159,7 +153,7 @@ export const loginUser = async (req: Request, res: Response): Promise<Response> 
       ip: req.ip,
     };
 
-    // Store user session in Redis with 7 days TTL (604800s)
+    // Store the user session in Redis for 24 hours.
     await cacheService.set(
       `session:${sessionId}`,
       sessionData,
@@ -186,6 +180,7 @@ export const loginUser = async (req: Request, res: Response): Promise<Response> 
     return res.status(200).json({
       message: "User logged in successfully",
       user: safeUser,
+      accessToken,
     });
   } catch (err) {
     const error = err as Error;
@@ -194,6 +189,16 @@ export const loginUser = async (req: Request, res: Response): Promise<Response> 
       error: error.message,
     });
   }
+};
+
+export const issueSessionToken = async (req: Request, res: Response): Promise<Response> => {
+  const user = req.user as AuthUserPayload | undefined;
+  const userId = user?.id || user?._id?.toString();
+  if (!userId) return res.status(401).json({ message: "Unauthorized" });
+  // Normalize the decoded JWT payload to the same shape as a database user.
+  return res.status(200).json({
+    accessToken: generateAccessToken({ ...user, _id: userId }, user?.sessionId),
+  });
 };
 
 export const refreshAccessToken = async (req: Request, res: Response): Promise<Response> => {
@@ -259,8 +264,8 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<R
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
       secure: isProduction,
-      sameSite: isProduction ? "strict" : "lax",
-      maxAge: 15 * 60 * 1000, // 15 mins
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     return res.status(200).json({
@@ -295,7 +300,7 @@ export const logoutUser = async (req: Request, res: Response): Promise<Response>
       }
     }
 
-    // Add access token to blacklist cache with 15 mins TTL
+    // Keep the access token revoked for its full 24-hour lifetime.
     if (accessToken) {
       await cacheService.set(
         `bl:${accessToken}`,
@@ -324,6 +329,17 @@ export const logoutUser = async (req: Request, res: Response): Promise<Response>
 
 export const googleAuthCallBack = async (req: Request, res: Response): Promise<Response | void> => {
   try {
+    let postAuthUrl = _config.CLIENT_URL;
+    if (typeof req.query.state === "string") {
+      try {
+        const target = new URL(Buffer.from(req.query.state, "base64url").toString());
+        if (target.origin === "https://tunease-music-service-latest.onrender.com") {
+          postAuthUrl = target.href;
+        }
+      } catch {
+        // Ignore malformed state and return to the auth app.
+      }
+    }
     const user = req.user as AuthUserPayload;
     if (!user || !user.emails || !user.emails[0]?.value) {
       return res.redirect(`${_config.CLIENT_URL}/login?error=google_auth_failed`);
@@ -351,7 +367,9 @@ export const googleAuthCallBack = async (req: Request, res: Response): Promise<R
       );
 
       setAuthCookies(res, accessToken, refreshToken);
-      return res.redirect(_config.CLIENT_URL);
+      const playerUrl = new URL(postAuthUrl);
+      playerUrl.hash = new URLSearchParams({ access_token: accessToken }).toString();
+      return res.redirect(playerUrl.toString());
     }
 
     const newUser = await userModel.create({
@@ -388,7 +406,9 @@ export const googleAuthCallBack = async (req: Request, res: Response): Promise<R
     );
 
     setAuthCookies(res, accessToken, refreshToken);
-    return res.redirect(_config.CLIENT_URL);
+    const playerUrl = new URL(postAuthUrl);
+    playerUrl.hash = new URLSearchParams({ access_token: accessToken }).toString();
+    return res.redirect(playerUrl.toString());
   } catch (err) {
     const error = err as Error;
     return res.status(500).json({

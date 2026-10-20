@@ -2,6 +2,7 @@ const { subscribeToQueue } = require("../messageBroker/rabbit");
 const sendEmail = require("../utils/email");
 const cacheService = require("../redis/cache.service");
 const client=require('../redis/client.redis');
+const _config = require("../config/config");
 
 const startListener = async () => {
     await subscribeToQueue("user_created", async (msg) => {
@@ -130,7 +131,7 @@ const startListener = async () => {
 
                     <div style="text-align: center; margin: 30px 0;">
 
-                        <a href="http://localhost:5173"
+                        <a href="${_config.CLIENT_URL}"
                            style="
                             display: inline-block;
                             background-color: #111111;

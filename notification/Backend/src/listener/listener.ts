@@ -2,6 +2,7 @@ import { subscribeToQueue } from "../messageBroker/rabbit";
 import sendEmail from "../utils/email";
 import cacheService from "../redis/cache.service";
 import client from "../redis/client.redis";
+import _config from "../config/config";
 
 interface UserCreatedMessage {
   id?: string;
@@ -69,7 +70,7 @@ export const startListener = async (): Promise<void> => {
                         Start exploring music, discover new tracks, and enjoy your personalized listening experience.
                     </p>
                     <div style="text-align: center; margin: 30px 0;">
-                        <a href="http://localhost:5173" style="display: inline-block; background-color: #111111; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 6px; font-weight: bold;">
+                        <a href="${_config.CLIENT_URL}" style="display: inline-block; background-color: #111111; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 6px; font-weight: bold;">
                             Start Listening 🎧
                         </a>
                     </div>

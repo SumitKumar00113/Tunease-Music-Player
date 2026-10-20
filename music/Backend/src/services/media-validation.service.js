@@ -1,4 +1,4 @@
-const AUDIO_LIMIT = 20 * 1024 * 1024;
+const AUDIO_LIMIT = 50 * 1024 * 1024;
 const COVER_LIMIT = 5 * 1024 * 1024;
 
 const AUDIO_TYPES = {
@@ -16,7 +16,7 @@ const IMAGE_TYPES = {
 function validateMediaFile(file, kind) {
     if (!file || !Buffer.isBuffer(file.buffer)) return "A valid uploaded file is required.";
     const maxSize = kind === "audio" ? AUDIO_LIMIT : COVER_LIMIT;
-    if ((file.size ?? file.buffer.length) > maxSize) return `${kind === "audio" ? "Audio" : "Cover image"} exceeds the ${kind === "audio" ? "20 MiB" : "5 MiB"} limit.`;
+    if ((file.size ?? file.buffer.length) > maxSize) return `${kind === "audio" ? "Audio" : "Cover image"} exceeds the ${kind === "audio" ? "50 MiB" : "5 MiB"} limit.`;
     const extension = String(file.originalname || "").split(".").pop().toLowerCase();
     const type = (kind === "audio" ? AUDIO_TYPES : IMAGE_TYPES)[extension];
     if (!type) return kind === "audio" ? "Audio must be MP3, WAV, or FLAC." : "Cover image must be JPG, PNG, or WebP.";

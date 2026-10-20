@@ -10,14 +10,23 @@ const passport = require('passport');
 const {Strategy:GoogleStrategy}=require("passport-google-oauth20");
 const _config=require("./config/config");
 const app=express();
+const allowedOrigins = new Set([
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5174",
+  "https://tunease-auth-service-latest.onrender.com",
+  "https://tunease-music-service-latest.onrender.com",
+]);
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, postman) or any local dev port
-    if (!origin || origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:")) {
+    if (!origin || allowedOrigins.has(origin)) {
       callback(null, true);
     } else {
-      callback(null, true);
+      callback(new Error("Origin is not allowed by CORS"));
     }
   },
   credentials: true

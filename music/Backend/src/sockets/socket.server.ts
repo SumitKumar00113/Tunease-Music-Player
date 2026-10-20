@@ -3,6 +3,11 @@ import { Server, Socket } from "socket.io";
 import jwt from "jsonwebtoken";
 import _config from "../config/config";
 import { AuthUser } from "../middleware/auth.middleware";
+import client from "../redis/client.redis";
+import { ipKeyGenerator } from "express-rate-limit";
+import { z } from "zod";
+
+const playPayloadSchema = z.union([z.string().min(1).max(120), z.object({ musicId: z.string().min(1).max(120) })]);
 
 export interface CustomSocket extends Socket {
   user?: AuthUser;
@@ -32,10 +37,9 @@ export const initiateSocketServer = async (httpServer: HttpServer): Promise<void
     cors: {
       origin: [
         "http://localhost:3000",
-        "http://localhost:3005",
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://localhost:5175",
+        "http://127.0.0.1:3000",
+        "https://tunease-music-service-latest.onrender.com",
+        "https://tunease-auth-service-latest.onrender.com",
       ],
       credentials: true,
     },
@@ -43,6 +47,52 @@ export const initiateSocketServer = async (httpServer: HttpServer): Promise<void
 
   io.use((socket: CustomSocket, next) => {
     try {
+      void (async () => {
+        const address = socket.handshake.address || "0.0.0.0";
+        const key = `music:limit:socket:connection:${ipKeyGenerator(address)}`;
+        const count = await client.incr(key);
+        if (count === 1) await client.expire(key, 60);
+        if (count > 20) { next(new Error("Too many socket connections. Try again in one minute.")); return; }
+        validateSocketToken(socket, next);
+      })().catch(() => next(new Error("Socket connection could not be verified.")));
+    } catch {
+      return next(new Error("Socket connection could not be verified."));
+    }
+  });
+
+  io.on("connection", (socket: CustomSocket) => {
+    const userId = socket.user?.id || socket.user?._id;
+    if (userId) socket.join(userId);
+
+    let tokens = 30;
+    let lastRefill = Date.now();
+    let violations = 0;
+    socket.use((_packet, next) => {
+      const now = Date.now();
+      tokens = Math.min(30, tokens + ((now - lastRefill) / 10000) * 30);
+      lastRefill = now;
+      if (tokens >= 1) { tokens -= 1; next(); return; }
+      violations += 1;
+      socket.emit("rate_limit", { retryAfter: Math.max(1, Math.ceil((1 - tokens) * 10000 / 30)) });
+      if (violations >= 3) socket.disconnect(true);
+      next(new Error("Too many events. Please slow down."));
+    });
+
+    socket.on("play", (data: unknown) => {
+      const parsed = playPayloadSchema.safeParse(data);
+      if (!parsed.success || !userId) return;
+      const musicId = typeof parsed.data === "string" ? parsed.data : parsed.data.musicId;
+      socket.broadcast.to(userId).emit("play", musicId);
+    });
+
+    socket.on("disconnect", () => {
+      if (userId) socket.leave(userId);
+    });
+  });
+};
+
+function validateSocketToken(socket: CustomSocket, next: (error?: Error) => void): void {
+  try {
       const rawCookie = socket.handshake.headers?.cookie || "";
       const cookies = parseCookies(rawCookie);
       const accessToken = cookies.accessToken || (socket.handshake.auth as { token?: string })?.token;
@@ -61,30 +111,7 @@ export const initiateSocketServer = async (httpServer: HttpServer): Promise<void
     } catch {
       return next(new Error("Authentication error: Invalid token"));
     }
-  });
-
-  io.on("connection", (socket: CustomSocket) => {
-    console.log(`${socket.id} connected`);
-    const userId = socket.user?.id || socket.user?._id;
-    if (userId) {
-      socket.join(userId);
-    }
-
-    socket.on("play", (data: { musicId?: string } | string) => {
-      const musicId = typeof data === "object" ? data?.musicId : data;
-      if (userId && musicId) {
-        socket.broadcast.to(userId).emit("play", musicId);
-      }
-    });
-
-    socket.on("disconnect", () => {
-      console.log(`${socket.id} disconnected`);
-      if (userId) {
-        socket.leave(userId);
-      }
-    });
-  });
-};
+}
 
 export default initiateSocketServer;
 module.exports = initiateSocketServer;

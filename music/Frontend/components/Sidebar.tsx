@@ -26,7 +26,7 @@ export default function Sidebar() {
 
   return (
     <aside className="hidden min-h-0 flex-col gap-5 overflow-hidden border-r border-line bg-surface p-4 md:flex">
-      <Link href="/" aria-label="Tunease home" className="px-2 py-1 font-display text-2xl font-bold tracking-tight"><span className="text-brand">Tunease</span></Link>
+      <Link href="/" aria-label="Tunease home" className="px-2 py-1 font-display text-2xl font-bold tracking-tight"><span className="text-foreground">Tune</span><span className="text-brand">ase</span></Link>
       <nav aria-label="Main navigation" className="flex flex-col gap-1">
         {navigation.map(({ href, label, icon: Icon }) => {
           const active = path === href || href !== "/" && path.startsWith(`${href}/`);

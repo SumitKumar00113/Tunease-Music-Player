@@ -61,8 +61,8 @@ Tunease is an audiophile-grade music streaming platform featuring a unified **Ne
 Copy `.env.example` to `.env` in each respective service directory:
 
 1. `web/.env.example` ➔ `web/.env.local`
-   - `NEXT_PUBLIC_API_URL=http://localhost:3000`
-   - `NEXT_PUBLIC_MUSIC_API_URL=http://localhost:3002`
+   - `NEXT_PUBLIC_AUTH_API_URL=https://tunease-auth-service-latest.onrender.com/api/auth`
+   - `NEXT_PUBLIC_MUSIC_API_URL=https://tunease-music-service-latest.onrender.com/api/music`
 2. `Auth/Backend/.env.example` ➔ `Auth/Backend/.env`
    - `MONGO_URI`, `JWT_ACCESS_TOKEN_SECRET_KEY`, `JWT_REFRESH_TOKEN_SECRET_KEY`, `RABBIT_MQ_URL`, `REDIS_URL`
 3. `music/Backend/.env.example` ➔ `music/Backend/.env`

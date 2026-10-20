@@ -4,29 +4,38 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import musicRoutes from "./routes/music.routes";
 import cors from "cors";
+import { globalRateLimiter } from "./middleware/rate-limit.middleware";
 
 import path from "path";
 import fs from "fs";
 
 const app = express();
+app.set("trust proxy", 1);
+const allowedOrigins = new Set([
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5174",
+  "https://tunease-auth-service-latest.onrender.com",
+  "https://tunease-music-service-latest.onrender.com",
+]);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (
-        !origin ||
-        origin.startsWith("http://localhost:") ||
-        origin.startsWith("http://127.0.0.1:")
-      ) {
+      if (!origin || allowedOrigins.has(origin)) {
         callback(null, true);
       } else {
-        callback(null, true);
+        callback(new Error("Origin is not allowed by CORS"));
       }
     },
     credentials: true,
   })
 );
 
+app.use("/api", globalRateLimiter);
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cookieParser());
@@ -56,7 +65,7 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
     const tooLarge = err.code === "LIMIT_FILE_SIZE";
     return res.status(tooLarge ? 413 : 400).json({
       message: tooLarge
-        ? "An uploaded file exceeds the 20 MiB request limit."
+        ? "An uploaded file exceeds the 50 MiB request limit."
         : "The uploaded files could not be accepted.",
     });
   }

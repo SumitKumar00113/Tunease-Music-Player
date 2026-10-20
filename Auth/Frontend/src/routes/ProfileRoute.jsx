@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserProfile } from '../components/UserProfile';
 import { AUTH_ROUTES } from './routes.config';
 
-export function ProfileRoute({ user, onLogout, onUpdateUser }) {
+export function ProfileRoute({ user, authToken, onLogout, onUpdateUser }) {
   const navigate = useNavigate();
 
   if (!user) {
@@ -18,6 +18,7 @@ export function ProfileRoute({ user, onLogout, onUpdateUser }) {
   return (
     <UserProfile
       user={user}
+      authToken={authToken}
       onLogout={handleLogoutAndRedirect}
       onUpdateUser={onUpdateUser}
     />

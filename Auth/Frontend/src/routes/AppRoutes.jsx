@@ -1,12 +1,42 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { LoginRoute } from './LoginRoute';
 import { RegisterRoute } from './RegisterRoute';
 import { ProfileRoute } from './ProfileRoute';
 import { AUTH_ROUTES } from './routes.config';
 
+const getPostLoginDestination = () => {
+  const requestedUrl = new URLSearchParams(window.location.search).get('returnTo');
+  const musicAppUrl = import.meta.env.VITE_MUSIC_APP_URL || 'https://tunease-music-service-latest.onrender.com';
+  if (requestedUrl) {
+    try {
+      const destination = new URL(requestedUrl);
+      if (destination.origin === new URL(musicAppUrl).origin) return destination.href;
+    } catch {
+      // Ignore malformed or untrusted return URLs and use the profile route.
+    }
+  }
+  return AUTH_ROUTES.PROFILE.path;
+};
+
+function AuthenticatedRedirect({ authToken }) {
+  const destination = getPostLoginDestination();
+  useEffect(() => {
+    if (/^https?:\/\//.test(destination)) {
+      const target = new URL(destination);
+      if (authToken) target.hash = new URLSearchParams({ access_token: authToken }).toString();
+      window.location.replace(target.toString());
+    }
+  }, [destination, authToken]);
+  return /^https?:\/\//.test(destination)
+    ? <div className="py-16 text-center text-xs text-neutral-400">Opening Tunease…</div>
+    : <Navigate to={destination} replace />;
+}
+
 export function AppRoutes({
   apiBaseUrl,
   user,
+  authToken,
   checkingAuth,
   onLoginSuccess,
   onLogout,
@@ -28,7 +58,7 @@ export function AppRoutes({
         path={AUTH_ROUTES.HOME.path}
         element={
           user ? (
-            <Navigate to={AUTH_ROUTES.PROFILE.path} replace />
+            <AuthenticatedRedirect authToken={authToken} />
           ) : (
             <LoginRoute
               apiBaseUrl={apiBaseUrl}
@@ -43,7 +73,7 @@ export function AppRoutes({
         path={AUTH_ROUTES.LOGIN.path}
         element={
           user ? (
-            <Navigate to={AUTH_ROUTES.PROFILE.path} replace />
+            <AuthenticatedRedirect authToken={authToken} />
           ) : (
             <LoginRoute
               apiBaseUrl={apiBaseUrl}
@@ -75,6 +105,7 @@ export function AppRoutes({
           user ? (
             <ProfileRoute
               user={user}
+              authToken={authToken}
               onLogout={onLogout}
               onUpdateUser={onUpdateUser}
             />

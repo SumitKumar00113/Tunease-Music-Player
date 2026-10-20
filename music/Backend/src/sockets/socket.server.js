@@ -6,7 +6,10 @@ const cookie=require("cookie");
 const initiateSocketServer=async(httpServer)=>{
 const io=new Server(httpServer,{
     cors: {
-        origin:"http://localhost:5174",
+        origin:[
+            "https://tunease-music-service-latest.onrender.com",
+            "https://tunease-auth-service-latest.onrender.com"
+        ],
         credentials:true
     }
 });

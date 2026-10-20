@@ -11,6 +11,18 @@ export default function HomeContent() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [greeting, setGreeting] = useState("");
+
+  useEffect(() => {
+    const updateGreeting = () => {
+      const hour = new Date().getHours();
+      setGreeting(hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening");
+    };
+
+    updateGreeting();
+    const interval = window.setInterval(updateGreeting, 60_000);
+    return () => window.clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -37,7 +49,7 @@ export default function HomeContent() {
     <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-8 pb-4">
       <div className="home-greeting py-3">
         <p className="mb-1 text-sm text-muted">Your sound, right where you left it</p>
-        <h1 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">Good evening</h1>
+        <h1 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">{greeting || "Welcome back"}</h1>
       </div>
 
       <section aria-labelledby="quick-picks-heading" className="flex flex-col gap-3">

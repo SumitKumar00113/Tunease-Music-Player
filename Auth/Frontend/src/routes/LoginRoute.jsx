@@ -3,7 +3,7 @@ import { LoginForm } from '../components/LoginForm';
 import { LogIn, UserPlus } from 'lucide-react';
 import { AUTH_ROUTES } from './routes.config';
 
-const MUSIC_APP_URL = import.meta.env.VITE_MUSIC_APP_URL || 'http://localhost:5174';
+const MUSIC_APP_URL = import.meta.env.VITE_MUSIC_APP_URL || 'https://tunease-music-service-latest.onrender.com';
 
 export function LoginRoute({ apiBaseUrl, onLoginSuccess }) {
   const navigate = useNavigate();
@@ -32,11 +32,13 @@ export function LoginRoute({ apiBaseUrl, onLoginSuccess }) {
 
       <LoginForm
         apiBaseUrl={apiBaseUrl}
-        onSuccess={(user) => {
-          onLoginSuccess(user);
+        onSuccess={(user, accessToken) => {
+          onLoginSuccess(user, accessToken);
           const role = user?.role?.toLowerCase();
           if (role === 'user' || role === 'listener') {
-            window.location.assign(`${MUSIC_APP_URL.replace(/\/$/, '')}/user_dashboard`);
+            const playerUrl = new URL(`${MUSIC_APP_URL.replace(/\/$/, '')}/user_dashboard`);
+            if (accessToken) playerUrl.hash = new URLSearchParams({ access_token: accessToken }).toString();
+            window.location.assign(playerUrl.toString());
             return;
           }
           navigate(AUTH_ROUTES.PROFILE.path);

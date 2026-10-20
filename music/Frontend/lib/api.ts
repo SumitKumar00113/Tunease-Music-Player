@@ -1,7 +1,7 @@
 import { playlists as mockPlaylists, tracks as mockTracks } from "@/lib/mock";
 import type { Playlist, SearchResults, Track } from "@/lib/types";
 
-const apiBase = (process.env.NEXT_PUBLIC_MUSIC_API_URL || "http://localhost:3002").replace(/\/$/, "");
+const apiBase = (process.env.NEXT_PUBLIC_MUSIC_API_URL || "https://tunease-music-service-latest.onrender.com").replace(/\/$/, "");
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -46,15 +46,57 @@ function mapPlaylist(value: unknown, index: number): Playlist | null {
   };
 }
 
-async function fetchJson(path: string): Promise<unknown> {
-  const response = await fetch(`${apiBase}${path}`, { credentials: "include", cache: "no-store" });
+function publishRateLimit(retryAfter: number): void {
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("tunease:rate-limit", { detail: { retryAfter } }));
+}
+
+function authHeaders(): HeadersInit {
+  if (typeof window === "undefined") return {};
+  const token = window.localStorage.getItem("accessToken") || window.localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+function requestHeaders(extra?: HeadersInit): Headers {
+  const headers = new Headers(authHeaders());
+  new Headers(extra).forEach((value, key) => headers.set(key, value));
+  return headers;
+}
+
+function waitForRetry(seconds: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let remaining = seconds;
+    const step = () => {
+      if (signal?.aborted) { reject(new DOMException("Request was cancelled", "AbortError")); return; }
+      publishRateLimit(remaining);
+      if (remaining <= 0) { resolve(); return; }
+      remaining -= 1;
+      window.setTimeout(step, 1000);
+    };
+    step();
+  });
+}
+
+async function request(path: string, init: RequestInit = {}): Promise<Response> {
+  const response = await fetch(`${apiBase}${path}`, { credentials: "include", cache: "no-store", ...init, headers: requestHeaders(init.headers) });
+  if (response.status !== 429) return response;
+  const retryAfter = Math.max(1, Number(response.headers.get("Retry-After") || "1") || 1);
+  publishRateLimit(retryAfter);
+  if ((init.method || "GET").toUpperCase() !== "GET") return response;
+  await waitForRetry(retryAfter, init.signal || undefined);
+  const retried = await fetch(`${apiBase}${path}`, { credentials: "include", cache: "no-store", ...init, headers: requestHeaders(init.headers) });
+  if (retried.status === 429) publishRateLimit(Math.max(1, Number(retried.headers.get("Retry-After") || "1") || 1));
+  return retried;
+}
+
+async function fetchJson(path: string, signal?: AbortSignal): Promise<unknown> {
+  const response = await request(path, { signal });
   if (!response.ok) throw new Error(`Music API returned ${response.status}`);
   return response.json() as Promise<unknown>;
 }
 
-async function fetchTracks(): Promise<Track[]> {
+async function fetchTracks(signal?: AbortSignal): Promise<Track[]> {
   try {
-    const payload = await fetchJson("/api/music/all");
+    const payload = await fetchJson("/api/music/all", signal);
     const raw = isRecord(payload) && Array.isArray(payload.music) ? payload.music : [];
     return raw.map(mapTrack).filter((track): track is Track => track !== null);
   } catch {
@@ -62,9 +104,9 @@ async function fetchTracks(): Promise<Track[]> {
   }
 }
 
-export async function getPlaylists(): Promise<Playlist[]> {
+export async function getPlaylists(signal?: AbortSignal): Promise<Playlist[]> {
   try {
-    const payload = await fetchJson("/api/music/get-playlist");
+    const payload = await fetchJson("/api/music/get-playlist", signal);
     const raw = isRecord(payload) && Array.isArray(payload.playlists) ? payload.playlists : [];
     return raw.map(mapPlaylist).filter((playlist): playlist is Playlist => playlist !== null);
   } catch {
@@ -83,10 +125,10 @@ export async function getPlaylist(id: string): Promise<Playlist | null> {
   return mockPlaylists.find((playlist) => playlist.id === id) ?? null;
 }
 
-export async function searchTracks(query: string): Promise<SearchResults> {
+export async function searchTracks(query: string, signal?: AbortSignal): Promise<SearchResults> {
   const normalized = query.trim().toLocaleLowerCase();
   if (!normalized) return { tracks: [], playlists: [] };
-  const [allTracks, allPlaylists] = await Promise.all([fetchTracks(), getPlaylists()]);
+  const [allTracks, allPlaylists] = await Promise.all([fetchTracks(signal), getPlaylists(signal)]);
   return {
     tracks: allTracks.filter((track) => `${track.title} ${track.artist} ${track.album}`.toLocaleLowerCase().includes(normalized)),
     playlists: allPlaylists.filter((playlist) => `${playlist.name} ${playlist.owner}`.toLocaleLowerCase().includes(normalized)),
@@ -97,7 +139,7 @@ export async function createPlaylist(name: string): Promise<Playlist> {
   const tracks = await fetchTracks();
   const firstTrack = tracks[0];
   if (!firstTrack) throw new Error("A track is needed to create a playlist on the music service.");
-  const response = await fetch(`${apiBase}/api/music/create-playlist/${encodeURIComponent(firstTrack.id)}`, {
+  const response = await request(`/api/music/create-playlist/${encodeURIComponent(firstTrack.id)}`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },

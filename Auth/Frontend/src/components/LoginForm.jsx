@@ -56,7 +56,7 @@ export const LoginForm = ({
 
       setSuccessMsg('Logged in successfully!');
       setTimeout(() => {
-        onSuccess(data.user);
+        onSuccess(data.user, data.accessToken);
       }, 800);
     } catch (err) {
       setError(err.message || 'An error occurred during sign in');
@@ -66,7 +66,10 @@ export const LoginForm = ({
   };
 
   const handleGoogleAuth = () => {
-    window.location.href = `${apiBaseUrl}/google`;
+    const returnTo = new URLSearchParams(window.location.search).get('returnTo');
+    const googleUrl = new URL(`${apiBaseUrl}/google`);
+    if (returnTo) googleUrl.searchParams.set('returnTo', returnTo);
+    window.location.href = googleUrl.toString();
   };
 
   return (

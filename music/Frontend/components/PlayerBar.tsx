@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Heart, ListMusic, MonitorSpeaker, Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
 import { io, type Socket } from "socket.io-client";
 import Cover from "./Cover";
 import { usePlayer } from "@/store/player";
 
 const fmt = (seconds: number) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
-const musicApi = (process.env.NEXT_PUBLIC_MUSIC_API_URL || "http://localhost:3002").replace(/\/$/, "");
+const musicApi = (process.env.NEXT_PUBLIC_MUSIC_API_URL || "https://tunease-music-service-latest.onrender.com").replace(/\/$/, "");
 
 export default function PlayerBar() {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -15,6 +16,8 @@ export default function PlayerBar() {
   const queue = usePlayer((state) => state.queue);
   const index = usePlayer((state) => state.index);
   const track = queue[index];
+  const trackId = track?.id;
+  const trackUrl = track?.url;
   const isPlaying = usePlayer((state) => state.isPlaying);
   const progress = usePlayer((state) => state.progress);
   const volume = usePlayer((state) => state.volume);
@@ -28,8 +31,8 @@ export default function PlayerBar() {
   const setVolume = usePlayer((state) => state.setVolume);
   const toggleShuffle = usePlayer((state) => state.toggleShuffle);
   const cycleRepeat = usePlayer((state) => state.cycleRepeat);
-  const [liked, setLiked] = useState(false);
-  useEffect(() => setLiked(false), [track?.id]);
+  const [likedTrackId, setLikedTrackId] = useState<string | null>(null);
+  const liked = Boolean(track && likedTrackId === track.id);
 
   useEffect(() => {
     usePlayer.getState().hydrateVolume();
@@ -45,15 +48,15 @@ export default function PlayerBar() {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || !track) return;
-    audio.src = track.url;
+    if (!audio || !trackId || !trackUrl) return;
+    audio.src = trackUrl;
     audio.load();
     seek(0);
-    if (isPlaying && track.url) audio.play().catch(() => usePlayer.setState({ isPlaying: false }));
+    if (isPlaying) audio.play().catch(() => usePlayer.setState({ isPlaying: false }));
     const socket = socketRef.current;
     if (socket && !socket.connected) socket.connect();
-    else socket?.emit("play", { musicId: track.id });
-  }, [track?.id, seek]);
+    else socket?.emit("play", { musicId: trackId });
+  }, [trackId, trackUrl, isPlaying, seek]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -62,6 +65,22 @@ export default function PlayerBar() {
     if (isPlaying && track?.url) audio.play().catch(() => usePlayer.setState({ isPlaying: false }));
     else audio.pause();
   }, [isPlaying, track?.id, track?.url, volume]);
+
+  useEffect(() => {
+    const nextTrack = queue[index + 1];
+    if (!nextTrack?.url || typeof window === "undefined") return;
+    const prefetch = () => {
+      const audio = new Audio();
+      audio.preload = "metadata";
+      audio.src = nextTrack.url;
+    };
+    const idle = window.requestIdleCallback?.(prefetch, { timeout: 2500 });
+    const timer = idle === undefined ? window.setTimeout(prefetch, 800) : undefined;
+    return () => {
+      if (idle !== undefined) window.cancelIdleCallback?.(idle);
+      if (timer !== undefined) window.clearTimeout(timer);
+    };
+  }, [queue, index]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -93,20 +112,22 @@ export default function PlayerBar() {
     <footer className="z-20 grid min-h-[66px] grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-t border-line bg-surface px-3 py-2 md:min-h-[88px] md:grid-cols-[minmax(0,1fr)_minmax(260px,2fr)_minmax(0,1fr)] md:gap-4 md:px-5">
       <audio ref={audioRef} preload="metadata" onTimeUpdate={(event) => setProgress(event.currentTarget.currentTime)} onEnded={handleEnded} />
       <div className="flex min-w-0 items-center gap-2.5 md:gap-3">
-        {track ? <>
-          <Cover id={track.id} coverUrl={track.coverUrl} className="size-11 shrink-0 md:size-14" />
-          <div className="min-w-0"><div className="truncate text-sm font-medium">{track.title}</div><div className="truncate text-xs text-muted">{track.artist}</div></div>
-          <button aria-label={liked ? "Remove from library" : "Add to library"} aria-pressed={liked} onClick={() => setLiked((current) => !current)} className={`ml-1 hidden shrink-0 transition hover:text-accent-soft sm:block ${liked ? "text-accent-soft" : "text-muted"}`}><Heart size={17} fill={liked ? "currentColor" : "none"} /></button>
-        </> : <span className="text-sm text-muted">Choose a song to start listening</span>}
+        <AnimatePresence mode="wait" initial={false}>
+          {track ? <motion.div key={track.id} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18 }} className="flex min-w-0 items-center gap-2.5 md:gap-3">
+            <Cover id={track.id} coverUrl={track.coverUrl} priority className="size-11 shrink-0 md:size-14" />
+            <div className="min-w-0"><div className="truncate text-sm font-medium">{track.title}</div><div className="truncate text-xs text-muted">{track.artist}</div></div>
+            <button aria-label={liked ? "Remove from library" : "Add to library"} aria-pressed={liked} onClick={() => setLikedTrackId((current) => current === track.id ? null : track.id)} className={`ml-1 hidden shrink-0 transition hover:text-accent-soft sm:block ${liked ? "text-accent-soft" : "text-muted"}`}><Heart size={17} fill={liked ? "currentColor" : "none"} /></button>
+          </motion.div> : <motion.span key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-sm text-muted">Choose a song to start listening</motion.span>}
+        </AnimatePresence>
       </div>
 
       <div className="flex min-w-0 flex-col items-center gap-1.5">
         <div className="flex items-center gap-2 md:gap-5">
           <button aria-label={`Shuffle ${shuffle ? "on" : "off"}`} aria-pressed={shuffle} onClick={toggleShuffle} className={`hidden transition hover:text-foreground md:block ${shuffle ? "text-accent-soft" : "text-muted"}`}><Shuffle size={17} /></button>
           <button aria-label="Previous track" onClick={prev} className="text-muted transition hover:text-foreground"><SkipBack size={19} fill="currentColor" /></button>
-          <button aria-label={isPlaying ? "Pause" : "Play"} onClick={toggle} className="grid size-9 place-items-center rounded-full bg-brand text-white transition hover:scale-105 md:size-10">
-            {isPlaying ? <Pause size={17} fill="currentColor" /> : <Play size={17} fill="currentColor" className="translate-x-px" />}
-          </button>
+          <motion.button whileTap={{ scale: 0.92 }} aria-label={isPlaying ? "Pause" : "Play"} onClick={toggle} disabled={!track} className="grid size-9 place-items-center rounded-full bg-brand text-bg transition hover:brightness-110 disabled:opacity-40 md:size-10">
+            <AnimatePresence mode="wait" initial={false}>{isPlaying ? <motion.span key="pause" initial={{ opacity: 0, scale: .8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: .8 }}><Pause size={17} fill="currentColor" /></motion.span> : <motion.span key="play" initial={{ opacity: 0, scale: .8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: .8 }}><Play size={17} fill="currentColor" className="translate-x-px" /></motion.span>}</AnimatePresence>
+          </motion.button>
           <button aria-label="Next track" onClick={next} className="text-muted transition hover:text-foreground"><SkipForward size={19} fill="currentColor" /></button>
           <button aria-label={`Repeat ${repeat}`} aria-pressed={repeat !== "off"} onClick={cycleRepeat} className={`hidden transition hover:text-foreground md:block ${repeat !== "off" ? "text-accent-soft" : "text-muted"}`}>{repeat === "one" ? <Repeat1 size={17} /> : <Repeat size={17} />}</button>
         </div>

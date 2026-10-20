@@ -11,37 +11,27 @@ import type { SearchResults } from "@/lib/types";
 
 const emptyResults: SearchResults = { tracks: [], playlists: [] };
 
-export default function SearchContent() {
+export default function SearchContent({ initialQuery = "" }: { initialQuery?: string }) {
   const router = useRouter();
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<SearchResults>(emptyResults);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(Boolean(initialQuery.trim()));
   const [error, setError] = useState("");
   const normalized = useMemo(() => query.trim(), [query]);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const initialQuery = params.get("q") || "";
-    setQuery(initialQuery);
-  }, []);
-
-  useEffect(() => {
-    if (!normalized) {
-      setResults(emptyResults);
-      setLoading(false);
-      setError("");
-      return;
-    }
-    setLoading(true);
-    setError("");
+    if (!normalized) return;
     let active = true;
+    const controller = new AbortController();
     const timer = window.setTimeout(() => {
-      searchTracks(normalized).then((value) => { if (active) setResults(value); }).catch(() => { if (active) setError("Search is unavailable. Try again in a moment."); }).finally(() => { if (active) setLoading(false); });
+      searchTracks(normalized, controller.signal).then((value) => { if (active) setResults(value); }).catch((reason: unknown) => { if (active && !(reason instanceof DOMException && reason.name === "AbortError")) setError("Search is unavailable. Try again in a moment."); }).finally(() => { if (active) setLoading(false); });
     }, 300);
-    return () => { active = false; window.clearTimeout(timer); };
+    return () => { active = false; controller.abort(); window.clearTimeout(timer); };
   }, [normalized]);
 
   const handleChange = (value: string) => {
+    setLoading(Boolean(value.trim()));
+    setError("");
     setQuery(value);
     const nextUrl = value.trim() ? `/search?q=${encodeURIComponent(value.trim())}` : "/search";
     router.replace(nextUrl, { scroll: false });

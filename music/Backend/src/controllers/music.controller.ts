@@ -56,7 +56,7 @@ export const uploadMusic = async (req: AuthenticatedRequest, res: Response): Pro
   const userId = user.id || user._id;
 
   try {
-    const { title, description, genre, duration, artistName, albumName, featuredArtists, releaseDate } = req.body;
+    const { title, description, genre, duration, artistName, albumName, featuredArtists, releaseDate, visibility } = req.body;
     const musicKey = await uploadFile(musicFile, "audio");
     const coverImageKey = await uploadFile(coverImageFile, "covers");
 
@@ -82,7 +82,7 @@ export const uploadMusic = async (req: AuthenticatedRequest, res: Response): Pro
       duration: Number(duration) || 180,
       releaseDate: releaseDate ? new Date(releaseDate) : new Date(),
       playCount: 0,
-      isPublished: true,
+      isPublished: (visibility || "Public") === "Public",
       isExplicit: false,
       createdBy: userId,
     });

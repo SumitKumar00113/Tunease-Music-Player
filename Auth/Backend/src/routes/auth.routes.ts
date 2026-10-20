@@ -24,6 +24,7 @@ router.post("/refresh", tokenMiddleware.refreshTokenValidate, authController.ref
 router.post("/logout", tokenMiddleware.accessTokenValidate, authController.logoutUser);
 router.post("/delete", tokenMiddleware.accessTokenValidate, authController.logoutUser);
 router.get("/me", tokenMiddleware.accessTokenValidate, authController.getUserProfile);
+router.get("/session-token", tokenMiddleware.accessTokenValidate, authController.issueSessionToken);
 router.put("/profile", tokenMiddleware.accessTokenValidate, authController.updateUserProfile);
 router.patch("/profile", tokenMiddleware.accessTokenValidate, authController.updateUserProfile);
 router.post("/requestEmailOTP", tokenMiddleware.accessTokenValidate, verificationController.requestEmailOTP);
@@ -35,7 +36,16 @@ router.post("/verifyMobileOtp", tokenMiddleware.accessTokenValidate, verificatio
 router.get(
   "/google",
   requireGoogleOAuthConfig,
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  (req, res, next) => {
+    const returnTo = typeof req.query.returnTo === "string" ? req.query.returnTo : "";
+    let state = "";
+    try {
+      const destination = new URL(returnTo);
+      const musicOrigin = new URL("https://tunease-music-service-latest.onrender.com").origin;
+      if (destination.origin === musicOrigin) state = Buffer.from(destination.href).toString("base64url");
+    } catch { /* No player return destination. */ }
+    passport.authenticate("google", { scope: ["profile", "email"], state })(req, res, next);
+  }
 );
 
 // Callback route that Google will redirect to after authentication

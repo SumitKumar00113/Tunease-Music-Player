@@ -1,4 +1,4 @@
-export const AUDIO_LIMIT = 20 * 1024 * 1024;
+export const AUDIO_LIMIT = 50 * 1024 * 1024;
 export const COVER_LIMIT = 5 * 1024 * 1024;
 
 interface TypeValidator {
@@ -75,7 +75,7 @@ export function validateMediaFile(
   const maxSize = kind === "audio" ? AUDIO_LIMIT : COVER_LIMIT;
   if ((file.size ?? file.buffer.length) > maxSize) {
     return `${kind === "audio" ? "Audio" : "Cover image"} exceeds the ${
-      kind === "audio" ? "20 MiB" : "5 MiB"
+      kind === "audio" ? "50 MiB" : "5 MiB"
     } limit.`;
   }
 
