@@ -20,7 +20,7 @@ import {
 
 export const UserProfile = ({ user, authToken, onLogout, onUpdateUser }) => {
   const landingUrl = import.meta.env.VITE_LANDING_URL || 'http://localhost:3000';
-  const musicUrl = `${(import.meta.env.VITE_MUSIC_APP_URL || 'https://tunease-music-service-latest.onrender.com').replace(/\/$/, '')}/user_dashboard${authToken ? `#access_token=${encodeURIComponent(authToken)}` : ''}`;
+  const musicUrl = `${(import.meta.env.VITE_MUSIC_APP_URL || 'https://tunease-music-player-4n45.vercel.app').replace(/\/$/, '')}/${authToken ? `#access_token=${encodeURIComponent(authToken)}` : ''}`;
   const apiBaseUrl = import.meta.env.VITE_AUTH_API_URL || 'https://tunease-auth-service-latest.onrender.com/api/auth';
 
   const [isEditing, setIsEditing] = useState(false);

@@ -39,7 +39,7 @@ router.get('/google', requireGoogleOAuthConfig, (req, res, next) => {
   let state = '';
   try {
     const target = new URL(returnTo);
-    if (target.origin === 'https://tunease-music-service-latest.onrender.com') {
+    if (target.origin === new URL(_config.MUSIC_APP_URL).origin) {
       state = Buffer.from(target.href).toString('base64url');
     }
   } catch {

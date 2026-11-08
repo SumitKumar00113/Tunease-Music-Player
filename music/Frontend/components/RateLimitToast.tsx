@@ -24,5 +24,5 @@ export default function RateLimitToast() {
     return () => window.clearTimeout(timer);
   }, [seconds]);
   if (!seconds) return null;
-  return <div role="status" aria-live="polite" className="fixed bottom-24 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full border border-line bg-elevated px-4 py-2 text-xs text-foreground shadow-xl md:bottom-24"><Clock3 size={14} className="text-accent-2"/><span>Too many requests. Retrying in {seconds}s</span></div>;
+  return <div role="status" aria-live="polite" className="fixed bottom-24 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full border border-line bg-elevated px-4 py-2 text-xs text-foreground shadow-xl md:bottom-24"><Clock3 size={14} className="text-lav"/><span>Too many requests. Retrying in {seconds}s</span></div>;
 }

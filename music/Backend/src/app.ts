@@ -20,6 +20,7 @@ const allowedOrigins = new Set([
   "http://127.0.0.1:5174",
   "https://tunease-auth-service-latest.onrender.com",
   "https://tunease-music-service-latest.onrender.com",
+  "https://tunease-music-player-4n45.vercel.app",
 ]);
 
 app.use(

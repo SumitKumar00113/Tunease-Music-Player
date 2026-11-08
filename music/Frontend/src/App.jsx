@@ -24,7 +24,7 @@ const MainContent = () => {
   useEffect(() => {
     let socket;
     try {
-      const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://tunease-music-service-latest.onrender.com";
+      const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "h   ttps://tunease-music-service-latest.onrender.com";
       socket = io(SOCKET_URL, {
         withCredentials: true,
         reconnectionAttempts: 3,

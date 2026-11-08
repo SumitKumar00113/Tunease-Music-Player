@@ -2,7 +2,11 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { CheckCircle2, FileAudio2, ImagePlus, LoaderCircle, Upload, X } from "lucide-react";
+import AccordionRow from "@/components/ui/AccordionRow";
+
+const StudioDropzone = dynamic(() => import("./StudioDropzone"), { ssr: false, loading: () => <div aria-hidden="true" className="studio-dropzone w-full animate-pulse px-5" /> });
 
 type Visibility = "Public" | "Private" | "Scheduled";
 type Draft = { title: string; genre: string; album: string; releaseDate: string; featuredArtists: string; description: string; visibility: Visibility };
@@ -115,14 +119,59 @@ export default function StudioUpload() {
     if (audioInput.current) audioInput.current.value = "";
   };
 
-  return <form className="studio-content" onSubmit={publish}>
-    <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="m-0 text-xs text-muted">Create a release for your listeners.</p></div><div className="flex gap-2"><button type="button" className="studio-button studio-button-flat" onClick={saveDraft}>Save draft</button><button data-rate-limited-action type="submit" className="studio-button studio-button-brand" disabled={publishing}>{publishing && <LoaderCircle className="animate-spin" size={14}/>}Publish</button></div></div>
-    {error && <p role="alert" className="rounded-lg border border-red-400/30 bg-red-400/10 p-3 text-xs text-red-200">{error}</p>}{message && <p role="status" className="flex items-center gap-2 rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-3 text-xs text-emerald-200"><CheckCircle2 size={15}/>{message}</p>}
-    <div className="studio-form-layout"><div className="studio-upload-panel">
-      <section className="studio-card studio-panel"><div className="studio-panel-heading"><h2>Audio file</h2><span className="text-[9px] text-muted">REQUIRED</span></div><input className="sr-only" ref={audioInput} type="file" accept=".mp3,.wav,audio/mpeg,audio/wav" onChange={(event) => startAudio(event.currentTarget.files?.[0])}/><button type="button" className="studio-dropzone mt-3 w-full px-5" onClick={() => audioInput.current?.click()} onDragOver={(event) => event.preventDefault()} onDrop={(event) => {event.preventDefault();startAudio(event.dataTransfer.files[0]);}}><FileAudio2 size={29} className="text-accent-soft"/><strong>Drag your audio file here</strong><small>MP3 or WAV, up to 50 MB</small><span className="studio-button studio-button-flat">Choose file</span></button>{audio && <div className="studio-progress mt-3"><div className="flex items-center gap-3"><FileAudio2 size={19} className="text-accent-soft"/><span className="studio-track-copy"><strong>{audio.name}</strong><small>{(audio.size / 1024 / 1024).toFixed(1)} MB · {progress === 100 ? "Upload complete" : publishing ? `Uploading ${progress}%` : "Ready to upload"}</small></span><button type="button" aria-label="Cancel audio upload" onClick={cancelAudio} className="rounded-full p-1.5 text-muted hover:bg-elevated hover:text-foreground"><X size={15}/></button></div><div className="studio-progress-track"><span style={{ width: `${progress}%` }}/></div></div>}</section>
-      <section className="studio-card studio-panel"><div className="studio-panel-heading"><h2>Cover art</h2><span className="text-[9px] text-muted">REQUIRED</span></div><div className="studio-cover-upload mt-3"><input className="sr-only" ref={coverInput} type="file" accept="image/jpeg,image/png" onChange={(event) => startCover(event.currentTarget.files?.[0])}/><button type="button" className="studio-cover-drop" onClick={() => coverInput.current?.click()} aria-label="Choose cover art">{coverPreview ? <Image src={coverPreview} alt="Cover art preview" fill sizes="130px" unoptimized className="object-cover"/> : <span className="grid justify-items-center gap-2"><ImagePlus size={25}/><span className="text-[8px]">Choose image</span></span>}</button><div className="grid gap-2"><strong className="text-[10px]">{cover?.name || "Upload your artwork"}</strong><span className="text-[9px] leading-5 text-muted">Square JPG or PNG, at least 1000 × 1000 px.</span><button type="button" className="studio-button studio-button-flat w-max" onClick={() => coverInput.current?.click()}>{cover ? "Replace image" : "Upload image"}</button></div></div></section>
-    </div>
-      <section className="studio-card studio-form-card"><div className="studio-panel-heading"><h2>Track details</h2><span className="text-[9px] text-muted">* REQUIRED</span></div><label className="studio-field">Title *<input required maxLength={120} value={form.title} onChange={(event) => setField("title", event.target.value)} placeholder="Track title"/></label><div className="studio-form-grid"><label className="studio-field">Genre *<select required value={form.genre} onChange={(event) => setField("genre", event.target.value)}><option value="">Select genre</option>{["Alternative","Ambient","Classical","Country","Electronic","Hip-hop","Indie","Jazz","Pop","R&B","Rock","Soul"].map((genre) => <option key={genre}>{genre}</option>)}</select></label><label className="studio-field">Album (optional)<input value={form.album} onChange={(event) => setField("album", event.target.value)} placeholder="Album name"/></label><label className="studio-field">Release date<input type="date" value={form.releaseDate} onChange={(event) => setField("releaseDate", event.target.value)}/></label><label className="studio-field">Featured artists<input value={form.featuredArtists} onChange={(event) => setField("featuredArtists", event.target.value)} placeholder="Add artists"/></label></div><label className="studio-field">Description<textarea rows={5} value={form.description} onChange={(event) => setField("description", event.target.value)} placeholder="Tell listeners about this track"/></label><fieldset className="m-0 border-0 p-0"><legend className="mb-2 text-[9px] text-muted">Visibility</legend><div className="studio-radio-cards">{(["Public","Private","Scheduled"] as const).map((value) => <label key={value}><input type="radio" name="visibility" value={value} checked={form.visibility === value} onChange={() => setField("visibility", value)}/>{value}</label>)}</div></fieldset><div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3 text-[9px] text-muted"><span>Uploads are checked by Tunease before publishing.</span><button data-rate-limited-action type="submit" className="studio-button studio-button-brand" disabled={publishing}><Upload size={14}/>{form.visibility === "Public" ? "Publish track" : "Save track"}</button></div></section>
-    </div>
-  </form>;
+  return (
+    <form className="studio-content studio-upload" onSubmit={publish}>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div><p className="m-0 text-xs text-muted">Create a release for your listeners.</p></div>
+        <div className="flex gap-2">
+          <button type="button" className="studio-button studio-button-flat" onClick={saveDraft}>Save draft</button>
+          <button data-rate-limited-action type="submit" className="studio-button studio-button-brand" disabled={publishing}>{publishing && <LoaderCircle className="animate-spin" size={14}/>}Publish</button>
+        </div>
+      </div>
+      {error && <p role="alert" className="rounded-lg border border-red/30 bg-red/10 p-3 text-xs text-red">{error}</p>}
+      {message && <p role="status" className="flex items-center gap-2 rounded-lg border border-lav/20 bg-lav/10 p-3 text-xs text-lav"><CheckCircle2 size={15}/>{message}</p>}
+
+      <div className="studio-form-layout">
+        <div className="studio-upload-panel">
+          <AccordionRow title="Audio file" accent="lavender" defaultOpen>
+            <div className="studio-accordion-content">
+              <span className="text-[9px] font-bold tracking-[0.14em] text-lav">REQUIRED</span>
+              <input className="sr-only" ref={audioInput} type="file" accept=".mp3,.wav,audio/mpeg,audio/wav" onChange={(event) => startAudio(event.currentTarget.files?.[0])}/>
+              <StudioDropzone onChoose={() => audioInput.current?.click()} onDrop={startAudio} />
+              {audio && <div className="studio-progress">
+                <div className="flex items-center gap-3"><FileAudio2 size={19} className="text-lav"/><span className="studio-track-copy"><strong>{audio.name}</strong><small>{(audio.size / 1024 / 1024).toFixed(1)} MB · {progress === 100 ? "Upload complete" : publishing ? `Uploading ${progress}%` : "Ready to upload"}</small></span><button type="button" aria-label="Cancel audio upload" onClick={cancelAudio} className="rounded-full p-1.5 text-muted hover:bg-elevated hover:text-foreground"><X size={15}/></button></div>
+                <div className="studio-progress-track"><span style={{ width: `${progress}%` }}/></div>
+              </div>}
+            </div>
+          </AccordionRow>
+
+          <AccordionRow title="Cover art" accent="lavender" defaultOpen>
+            <div className="studio-accordion-content">
+              <span className="text-[9px] font-bold tracking-[0.14em] text-lav">REQUIRED</span>
+              <div className="studio-cover-upload">
+                <input className="sr-only" ref={coverInput} type="file" accept="image/jpeg,image/png" onChange={(event) => startCover(event.currentTarget.files?.[0])}/>
+                <button type="button" className="studio-cover-drop" onClick={() => coverInput.current?.click()} aria-label="Choose cover art">{coverPreview ? <Image src={coverPreview} alt="Cover art preview" fill sizes="130px" unoptimized className="object-cover"/> : <span className="grid justify-items-center gap-2"><ImagePlus size={25}/><span className="text-[8px]">Choose image</span></span>}</button>
+                <div className="grid gap-2"><strong className="text-[10px]">{cover?.name || "Upload your artwork"}</strong><span className="text-[9px] leading-5 text-muted">Square JPG or PNG, at least 1000 × 1000 px.</span><button type="button" className="studio-button studio-button-flat w-max" onClick={() => coverInput.current?.click()}>{cover ? "Replace image" : "Upload image"}</button></div>
+              </div>
+            </div>
+          </AccordionRow>
+        </div>
+
+        <AccordionRow title="Track details" accent="lavender" defaultOpen>
+          <div className="studio-accordion-content">
+            <label className="studio-field">Title *<input required maxLength={120} value={form.title} onChange={(event) => setField("title", event.target.value)} placeholder="Track title"/></label>
+            <div className="studio-form-grid">
+              <label className="studio-field">Genre *<select required value={form.genre} onChange={(event) => setField("genre", event.target.value)}><option value="">Select genre</option>{["Alternative","Ambient","Classical","Country","Electronic","Hip-hop","Indie","Jazz","Pop","R&B","Rock","Soul"].map((genre) => <option key={genre}>{genre}</option>)}</select></label>
+              <label className="studio-field">Album (optional)<input value={form.album} onChange={(event) => setField("album", event.target.value)} placeholder="Album name"/></label>
+              <label className="studio-field">Release date<input type="date" value={form.releaseDate} onChange={(event) => setField("releaseDate", event.target.value)}/></label>
+              <label className="studio-field">Featured artists<input value={form.featuredArtists} onChange={(event) => setField("featuredArtists", event.target.value)} placeholder="Add artists"/></label>
+            </div>
+            <label className="studio-field">Description<textarea rows={5} value={form.description} onChange={(event) => setField("description", event.target.value)} placeholder="Tell listeners about this track"/></label>
+            <fieldset className="m-0 border-0 p-0"><legend className="mb-2 text-[9px] text-muted">Visibility</legend><div className="studio-radio-cards">{(["Public","Private","Scheduled"] as const).map((value) => <label key={value}><input type="radio" name="visibility" value={value} checked={form.visibility === value} onChange={() => setField("visibility", value)}/>{value}</label>)}</div></fieldset>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3 text-[9px] text-muted"><span>Uploads are checked by Tunease before publishing.</span><button data-rate-limited-action type="submit" className="studio-button studio-button-brand" disabled={publishing}><Upload size={14}/>{form.visibility === "Public" ? "Publish track" : "Save track"}</button></div>
+          </div>
+        </AccordionRow>
+      </div>
+    </form>
+  );
 }

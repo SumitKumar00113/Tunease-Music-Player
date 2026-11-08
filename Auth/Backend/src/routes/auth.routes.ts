@@ -41,7 +41,7 @@ router.get(
     let state = "";
     try {
       const destination = new URL(returnTo);
-      const musicOrigin = new URL("https://tunease-music-service-latest.onrender.com").origin;
+      const musicOrigin = new URL(_config.MUSIC_APP_URL).origin;
       if (destination.origin === musicOrigin) state = Buffer.from(destination.href).toString("base64url");
     } catch { /* No player return destination. */ }
     passport.authenticate("google", { scope: ["profile", "email"], state })(req, res, next);

@@ -53,7 +53,7 @@ export default function StudioShell({ children }: { children: ReactNode }) {
     <div className="studio-layout">
       <aside className="studio-sidebar">
         <Link className="studio-brand" href="/studio" aria-label="Tunease Studio home">
-          <span className="grid size-9 place-items-center rounded-lg bg-studio text-white"><Music2 size={19}/></span>
+          <span className="grid size-9 place-items-center rounded-[14px] bg-lav text-bg"><Music2 size={19}/></span>
           <span>Tunease <span className="studio-badge">Studio</span></span>
         </Link>
         <nav className="studio-nav" aria-label="Artist dashboard">
@@ -63,12 +63,19 @@ export default function StudioShell({ children }: { children: ReactNode }) {
           })}
         </nav>
         <div className="studio-account">
-          <span className="studio-account-avatar relative overflow-hidden" aria-hidden="true">{artist.photo ? <Image src={artist.photo} alt="" fill sizes="35px" unoptimized className="rounded-full object-cover"/> : artist.name.charAt(0).toUpperCase()}</span>
-          <span className="studio-account-copy"><strong>{artist.name}</strong><Link href="/">Switch to listener app <ArrowUpRight className="ml-1 inline" size={12}/></Link></span>
+          <div className="studio-account-identity">
+            <span className="studio-account-avatar relative overflow-hidden" aria-hidden="true">{artist.photo ? <Image src={artist.photo} alt="" fill sizes="35px" unoptimized className="rounded-full object-cover"/> : artist.name.charAt(0).toUpperCase()}</span>
+            <span className="studio-account-copy"><strong>{artist.name}</strong><span>Artist account</span></span>
+          </div>
+          <div className="studio-mode-switch" aria-label="Current app: Studio">
+            <span className="studio-mode-listener">Listener</span>
+            <span className="studio-mode-current">Studio</span>
+            <Link href="/" aria-label="Switch to listener app" className="studio-mode-switch-button">Switch <ArrowUpRight size={12}/></Link>
+          </div>
         </div>
       </aside>
       <div className="studio-main">
-        <header className="studio-topbar"><div className="flex items-center gap-3"><span className="grid size-8 place-items-center rounded-lg bg-studio text-white md:hidden"><Disc3 size={17}/></span><h1>{title}</h1></div>
+        <header className="studio-topbar"><div className="flex items-center gap-3"><span className="grid size-8 place-items-center rounded-[12px] bg-lav text-bg md:hidden"><Disc3 size={17}/></span><h1>{title}</h1></div>
           <div className="studio-top-actions">{pathname === "/studio" && <select aria-label="Analytics date range" className="studio-period" defaultValue="30"><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option></select>}{!pathname.startsWith("/studio/upload") && pathname !== "/studio/profile" && <Link className="studio-button studio-button-brand" href="/studio/upload"><Upload size={15}/> Upload track</Link>}<span className="studio-avatar" aria-label="Sumit Mahaseth">S</span></div>
         </header>
         {children}

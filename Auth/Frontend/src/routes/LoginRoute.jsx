@@ -3,7 +3,21 @@ import { LoginForm } from '../components/LoginForm';
 import { LogIn, UserPlus } from 'lucide-react';
 import { AUTH_ROUTES } from './routes.config';
 
-const MUSIC_APP_URL = import.meta.env.VITE_MUSIC_APP_URL || 'https://tunease-music-service-latest.onrender.com';
+const MUSIC_APP_URL = import.meta.env.VITE_MUSIC_APP_URL || 'https://tunease-music-player-4n45.vercel.app';
+
+function getPostLoginDestination() {
+  const configuredMusicUrl = new URL(MUSIC_APP_URL);
+  const requestedUrl = new URLSearchParams(window.location.search).get('returnTo');
+  if (requestedUrl) {
+    try {
+      const requested = new URL(requestedUrl);
+      if (requested.origin === configuredMusicUrl.origin) return new URL('/', requested.origin);
+    } catch {
+      // Ignore malformed or untrusted return URLs.
+    }
+  }
+  return new URL('/', configuredMusicUrl.origin);
+}
 
 export function LoginRoute({ apiBaseUrl, onLoginSuccess }) {
   const navigate = useNavigate();
@@ -34,14 +48,9 @@ export function LoginRoute({ apiBaseUrl, onLoginSuccess }) {
         apiBaseUrl={apiBaseUrl}
         onSuccess={(user, accessToken) => {
           onLoginSuccess(user, accessToken);
-          const role = user?.role?.toLowerCase();
-          if (role === 'user' || role === 'listener') {
-            const playerUrl = new URL(`${MUSIC_APP_URL.replace(/\/$/, '')}/user_dashboard`);
-            if (accessToken) playerUrl.hash = new URLSearchParams({ access_token: accessToken }).toString();
-            window.location.assign(playerUrl.toString());
-            return;
-          }
-          navigate(AUTH_ROUTES.PROFILE.path);
+          const destination = getPostLoginDestination();
+          if (accessToken) destination.hash = new URLSearchParams({ access_token: accessToken }).toString();
+          window.location.replace(destination.toString());
         }}
         onSwitchToRegister={() => navigate(AUTH_ROUTES.REGISTER.path)}
       />

@@ -323,7 +323,7 @@ const googleAuthCallBack = async (req, res) => {
         if (typeof req.query.state === 'string') {
             try {
                 const target = new URL(Buffer.from(req.query.state, 'base64url').toString());
-                if (target.origin === 'https://tunease-music-service-latest.onrender.com') postAuthUrl = target.href;
+                if (target.origin === new URL(_config.MUSIC_APP_URL).origin) postAuthUrl = target.href;
             } catch {
                 // Ignore malformed state and return to the auth app.
             }

@@ -8,7 +8,8 @@ const io=new Server(httpServer,{
     cors: {
         origin:[
             "https://tunease-music-service-latest.onrender.com",
-            "https://tunease-auth-service-latest.onrender.com"
+            "https://tunease-auth-service-latest.onrender.com",
+            "https://tunease-music-player-4n45.vercel.app"
         ],
         credentials:true
     }

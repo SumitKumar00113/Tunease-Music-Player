@@ -333,7 +333,7 @@ export const googleAuthCallBack = async (req: Request, res: Response): Promise<R
     if (typeof req.query.state === "string") {
       try {
         const target = new URL(Buffer.from(req.query.state, "base64url").toString());
-        if (target.origin === "https://tunease-music-service-latest.onrender.com") {
+        if (target.origin === new URL(_config.MUSIC_APP_URL).origin) {
           postAuthUrl = target.href;
         }
       } catch {

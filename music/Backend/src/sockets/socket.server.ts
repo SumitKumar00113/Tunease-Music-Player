@@ -40,6 +40,7 @@ export const initiateSocketServer = async (httpServer: HttpServer): Promise<void
         "http://127.0.0.1:3000",
         "https://tunease-music-service-latest.onrender.com",
         "https://tunease-auth-service-latest.onrender.com",
+        "https://tunease-music-player-4n45.vercel.app",
       ],
       credentials: true,
     },
