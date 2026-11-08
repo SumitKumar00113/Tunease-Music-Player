@@ -23,7 +23,7 @@ const genres = [
 ];
 
 const artists = [
-  { name: "Ari Nova", ring: "var(--color-lime)" },
+  { name: "Ari Nova", ring: "var(--color-lime)", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop" },
   { name: "Mika Moon", ring: "var(--color-lav)" },
   { name: "Kai Rivers", ring: "var(--color-pink)" },
   { name: "Noah June", ring: "var(--color-sky)" },
@@ -152,9 +152,9 @@ export default function HomeContent() {
           <motion.div animate={marqueeControls} onHoverStart={() => setMarqueeHovered(true)} onHoverEnd={() => setMarqueeHovered(false)} className="artist-marquee-track flex w-max">
             {[0, 1].map((copy) => (
               <div key={copy} aria-hidden={copy === 1 ? true : undefined} className={`artist-marquee-group flex shrink-0 gap-5 pr-5 sm:gap-7 sm:pr-7 ${copy === 1 ? "artist-marquee-copy" : ""}`}>
-                {artists.map((artist) => (
+                {artists.map((artist, index) => (
                   <figure key={`${copy}-${artist.name}`} className="m-0 flex w-20 shrink-0 flex-col items-center gap-2 text-center sm:w-24">
-                    <SquircleAvatar name={artist.name} ringColor={artist.ring} className="size-16 rounded-[22px] sm:size-20 sm:rounded-[26px]" />
+                    <SquircleAvatar name={artist.name} ringColor={artist.ring} imageSrc={artist.image} priority={copy === 0 && index === 0} className="size-16 rounded-[22px] sm:size-20 sm:rounded-[26px]" />
                     <figcaption className="w-full truncate text-xs font-medium text-muted">{artist.name}</figcaption>
                   </figure>
                 ))}

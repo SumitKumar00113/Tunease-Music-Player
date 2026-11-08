@@ -1,7 +1,7 @@
 import { playlists as mockPlaylists, tracks as mockTracks } from "@/lib/mock";
 import type { Playlist, SearchResults, Track } from "@/lib/types";
 
-const apiBase = (process.env.NEXT_PUBLIC_MUSIC_API_URL || "https://tunease-music-service-latest.onrender.com").replace(/\/$/, "");
+const apiBase = (process.env.NEXT_PUBLIC_MUSIC_API_URL || "https://tunease-music-player-music-backend.onrender.com").replace(/\/$/, "");
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);

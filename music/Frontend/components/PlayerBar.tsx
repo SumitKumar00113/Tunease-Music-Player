@@ -8,7 +8,7 @@ import Cover from "./Cover";
 import { usePlayer } from "@/store/player";
 
 const fmt = (seconds: number) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
-const musicApi = (process.env.NEXT_PUBLIC_MUSIC_API_URL || "https://tunease-music-service-latest.onrender.com").replace(/\/$/, "");
+const musicApi = (process.env.NEXT_PUBLIC_MUSIC_API_URL || "https://tunease-music-player-music-backend.onrender.com").replace(/\/$/, "");
 
 export default function PlayerBar() {
   const audioRef = useRef<HTMLAudioElement>(null);

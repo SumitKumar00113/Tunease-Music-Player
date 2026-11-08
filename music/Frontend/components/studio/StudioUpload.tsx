@@ -83,7 +83,7 @@ export default function StudioUpload() {
     payload.append("visibility", form.visibility);
     payload.append("duration", "180");
     const token = window.localStorage.getItem("accessToken") || window.localStorage.getItem("token");
-    const apiUrl = (process.env.NEXT_PUBLIC_MUSIC_API_URL || "https://tunease-music-service-latest.onrender.com").replace(/\/$/, "");
+    const apiUrl = (process.env.NEXT_PUBLIC_MUSIC_API_URL || "https://tunease-music-player-music-backend.onrender.com").replace(/\/$/, "");
     await new Promise<void>((resolve) => {
       const request = new XMLHttpRequest();
       uploadRequest.current = request;

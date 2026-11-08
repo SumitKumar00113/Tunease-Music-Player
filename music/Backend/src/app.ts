@@ -21,6 +21,8 @@ const allowedOrigins = new Set([
   "https://tunease-auth-service-latest.onrender.com",
   "https://tunease-music-service-latest.onrender.com",
   "https://tunease-music-player-4n45.vercel.app",
+  "https://tunease-music-player-zzde.vercel.app",
+  "https://tunease-music-player.vercel.app",
 ]);
 
 app.use(
