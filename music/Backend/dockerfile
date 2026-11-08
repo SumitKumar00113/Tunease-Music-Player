@@ -21,9 +21,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
-# Copy compiled backend dist and frontend public assets
+# Copy the compiled backend. Public assets are optional for this API service.
 COPY --from=builder --chown=node:node /app/dist ./dist
-COPY --from=builder --chown=node:node /app/public ./public
 COPY --chown=node:node package.json ./
 
 # Run as secure non-root user
