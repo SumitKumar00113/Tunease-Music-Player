@@ -3,7 +3,7 @@ import { LoginForm } from '../components/LoginForm';
 import { LogIn, UserPlus } from 'lucide-react';
 import { AUTH_ROUTES } from './routes.config';
 
-const MUSIC_APP_URL = import.meta.env.VITE_MUSIC_APP_URL || 'https://tunease-music-player-4n45.vercel.app';
+const MUSIC_APP_URL = import.meta.env.VITE_MUSIC_APP_URL || 'https://tunease-music-player-zzde.vercel.app';
 
 function getPostLoginDestination() {
   const configuredMusicUrl = new URL(MUSIC_APP_URL);

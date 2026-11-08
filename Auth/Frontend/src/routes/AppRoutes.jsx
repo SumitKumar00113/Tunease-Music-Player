@@ -7,7 +7,7 @@ import { AUTH_ROUTES } from './routes.config';
 
 const getPostLoginDestination = () => {
   const requestedUrl = new URLSearchParams(window.location.search).get('returnTo');
-  const musicAppUrl = import.meta.env.VITE_MUSIC_APP_URL || 'https://tunease-music-player-4n45.vercel.app';
+  const musicAppUrl = import.meta.env.VITE_MUSIC_APP_URL || 'https://tunease-music-player-zzde.vercel.app';
   if (requestedUrl) {
     try {
       const destination = new URL(requestedUrl);

@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { AppRoutes } from './routes';
 
 const API_BASE_URL = import.meta.env.VITE_AUTH_API_URL || 'https://tunease-auth-service-latest.onrender.com/api/auth';
-const LANDING_URL = import.meta.env.VITE_LANDING_URL || 'https://tunease-music-service-latest.onrender.com';
+const LANDING_URL = import.meta.env.VITE_LANDING_URL || 'https://tunease-music-player-zzde.vercel.app';
 
 export function App() {
   const [user, setUser] = useState(null);
